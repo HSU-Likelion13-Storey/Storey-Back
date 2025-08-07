@@ -19,9 +19,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(SignupReq signupReq) {
-        if (userRepository.existsByLoginId(signupReq.getLoginId())) {
-            throw new DuplicateLoginIdException();
-        }
+//        if (userRepository.existsByLoginId(signupReq.getLoginId())) {
+//            throw new DuplicateLoginIdException();
+//        }
 
         User user = User.builder()
                 .loginId(signupReq.getLoginId())
