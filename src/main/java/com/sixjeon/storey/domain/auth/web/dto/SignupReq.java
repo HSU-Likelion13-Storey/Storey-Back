@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import com.sixjeon.storey.domain.auth.entity.Role;
 
 @Getter
 @NoArgsConstructor
@@ -21,4 +22,6 @@ public class SignupReq {
     private String password;
 
     private String phoneNumber;
+
+    private Role role;
 }
