@@ -20,7 +20,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public SignupRes signUp(SignupReq signupReq) {
-        switch (signupReq.getRole()) {
+        // String role을 Role enum로 변환
+        Role role;
+        try {
+            role = Role.valueOf(signupReq.getRole().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRoleException();
+        }
+
+
+        switch (role) {
             case OWNER:
                 Owner owner = ownerService.createOwner(signupReq);
 
