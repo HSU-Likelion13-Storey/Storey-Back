@@ -2,6 +2,7 @@ package com.sixjeon.storey.domain.auth.service;
 
 import com.sixjeon.storey.domain.auth.entity.Role;
 import com.sixjeon.storey.domain.auth.exception.DuplicateLoginIdException;
+import com.sixjeon.storey.domain.auth.exception.DuplicatePhoneNumberException;
 import com.sixjeon.storey.domain.auth.exception.InvalidRoleException;
 import com.sixjeon.storey.domain.auth.web.dto.SignupReq;
 import com.sixjeon.storey.domain.auth.web.dto.SignupRes;
@@ -28,6 +29,11 @@ public class AuthServiceImpl implements AuthService {
         // 아이디 중복 확인
         if (ownerRepository.existsByLoginId(signupReq.getLoginId()) || userRepository.existsByLoginId(signupReq.getLoginId())) {
             throw new DuplicateLoginIdException();
+        }
+        // 전화번호 중복 확인
+        if (ownerRepository.existsByPhoneNumber(signupReq.getPhoneNumber()) || userRepository.existsByPhoneNumber(signupReq.getPhoneNumber())) {
+            throw new DuplicatePhoneNumberException();
+
         }
         // String role을 Role enum로 변환
         Role role;
