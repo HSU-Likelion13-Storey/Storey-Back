@@ -1,6 +1,7 @@
 package com.sixjeon.storey.domain.auth.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -22,6 +23,6 @@ public class SignupReq {
     private String password;
 
     private String phoneNumber;
-
-    private Role role;
+    // enum을 DTO에서 직접 받으면 Jackson이 잘못된 값의 예외 처리가 복잡해지므로 String으로 받음
+    private String role;
 }
