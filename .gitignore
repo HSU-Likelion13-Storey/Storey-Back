@@ -40,3 +40,6 @@ out/
 .DS_Store
 
 logs/
+
+# application.properties 파일 무시
+application.properties
