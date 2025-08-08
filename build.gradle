@@ -39,9 +39,10 @@ dependencies {
 	// 유효성 검사를 위한 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+
 	// RestTemplate 대신 비동기적 방식인 WebClient를 사용하기 위한 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-}
+
 
 tasks.named('test') {
 	useJUnitPlatform()
