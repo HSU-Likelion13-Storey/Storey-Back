@@ -27,7 +27,6 @@ public class ProprietorController {
 
     @PostMapping("/proprietor")
     public ResponseEntity<SuccessResponse<?>> checkProprietor(@RequestBody @Valid CheckProprietorReq checkProprietorReq) {
-        System.out.println("checkProprietor: " + checkProprietorReq.getBusinessNumber());
         CheckProprietorRes checkProprietorRes = proprietorService.checkProprietorNumber(checkProprietorReq);
 
         return ResponseEntity
