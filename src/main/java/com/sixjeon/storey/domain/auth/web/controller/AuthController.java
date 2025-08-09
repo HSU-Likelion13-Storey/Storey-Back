@@ -1,6 +1,8 @@
 package com.sixjeon.storey.domain.auth.web.controller;
 
 import com.sixjeon.storey.domain.auth.service.AuthService;
+import com.sixjeon.storey.domain.auth.web.dto.LoginReq;
+import com.sixjeon.storey.domain.auth.web.dto.LoginRes;
 import com.sixjeon.storey.domain.auth.web.dto.SignupReq;
 import com.sixjeon.storey.domain.auth.web.dto.SignupRes;
 import com.sixjeon.storey.global.response.SuccessResponse;
@@ -27,6 +29,23 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(SuccessResponse.created(signupRes));
+    }
 
+    @PostMapping("/owner/login")
+    public ResponseEntity<SuccessResponse<?>> ownerLogin(@Valid @RequestBody LoginReq loginReq) {
+        LoginRes loginRes = authService.ownerSignin(loginReq);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.ok(loginRes));
+    }
+
+    @PostMapping("/user/login")
+    public ResponseEntity<SuccessResponse<?>> userLogin(@Valid @RequestBody LoginReq loginReq) {
+        LoginRes loginRes = authService.userSignin(loginReq);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.ok(loginRes));
     }
 }
