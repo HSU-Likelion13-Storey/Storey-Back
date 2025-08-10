@@ -1,5 +1,6 @@
 package com.sixjeon.storey.domain.user.entity;
 
+import com.sixjeon.storey.domain.user.entity.enums.ProviderType;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
