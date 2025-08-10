@@ -9,6 +9,7 @@ import com.sixjeon.storey.domain.proprietor.web.dto.CheckProprietorReq;
 import com.sixjeon.storey.domain.proprietor.web.dto.CheckProprietorRes;
 import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.domain.store.exception.AlreadyRegisterStoreException;
+import com.sixjeon.storey.domain.store.exception.DuplicateBusinessNumberException;
 import com.sixjeon.storey.domain.store.exception.InvalidBusinessNumberException;
 import com.sixjeon.storey.domain.store.repository.StoreRepository;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
@@ -38,7 +39,7 @@ public class StoreServiceImpl implements StoreService {
 
         // 사업자 번호(businessNumber) 중복 체크
         if (storeRepository.existsByBusinessNumber(registerStoreReq.getBusinessNumber())) {
-            throw new DuplicatePhoneNumberException();
+            throw new DuplicateBusinessNumberException();
         }
 
         // 외부 API로 사업자 번호 유효성 검증
