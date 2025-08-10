@@ -8,6 +8,7 @@ import com.sixjeon.storey.domain.proprietor.service.ProprietorService;
 import com.sixjeon.storey.domain.proprietor.web.dto.CheckProprietorReq;
 import com.sixjeon.storey.domain.proprietor.web.dto.CheckProprietorRes;
 import com.sixjeon.storey.domain.store.entity.Store;
+import com.sixjeon.storey.domain.store.exception.AlreadyRegisterStoreException;
 import com.sixjeon.storey.domain.store.exception.InvalidBusinessNumberException;
 import com.sixjeon.storey.domain.store.repository.StoreRepository;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
@@ -29,6 +30,12 @@ public class StoreServiceImpl implements StoreService {
         // 사장님 정보 확인
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
+
+        // 이미 등록되어있는 가게가 있는지 확인
+        if (storeRepository.existsByOwner(owner)) {
+            throw new AlreadyRegisterStoreException();
+        }
+
         // 사업자 번호(businessNumber) 중복 체크
         if (storeRepository.existsByBusinessNumber(registerStoreReq.getBusinessNumber())) {
             throw new DuplicatePhoneNumberException();
