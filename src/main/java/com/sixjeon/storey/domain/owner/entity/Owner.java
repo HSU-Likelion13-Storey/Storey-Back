@@ -17,9 +17,6 @@ public class Owner extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "owner_id")
     private Long id;
-    // 사장님 이름 -> 회원가입 받을 때 입력받지 않으므로 nullable = true로 설정
-    @Column(name = "representative_name",nullable = true)
-    private String representativeName;
 
     @Column(name = "login_id", nullable = false, unique = true)
     private String loginId;
