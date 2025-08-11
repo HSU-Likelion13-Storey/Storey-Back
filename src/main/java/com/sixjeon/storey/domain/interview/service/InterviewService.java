@@ -1,8 +1,11 @@
 package com.sixjeon.storey.domain.interview.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sixjeon.storey.domain.interview.web.dto.CharacterRes;
+import com.sixjeon.storey.domain.interview.web.dto.CreateQuestionReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewRes;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,49 @@ public class InterviewService {
     private String openaiApiBaseUrl;
 
     private final WebClient.Builder webClientBuilder;
+
+    public InterviewRes startInterview(CreateQuestionReq createQuestionReq) {
+        /**
+         * 1. createQuestionReq 에서 @storeMood, @businessType 가져오기
+         * 2. Propt 구성
+         * 3. OpenAI API 호출
+         * 4. 가게에 맞게 커스텀된 질문 return
+         */
+        String prompt = buildFirstPrompt(createQuestionReq.getStoreMood(), createQuestionReq.getBusinessType());
+
+        String response = callOpenAI(prompt);
+
+        return new InterviewRes(response);
+    }
+
+    private String buildFirstPrompt(String storeMood, String businessType) {
+        String mood = (storeMood == null || storeMood.isBlank()) ? "따뜻한" : storeMood.trim();
+        String type = (businessType == null || businessType.isBlank()) ? "일반" : businessType.trim();
+
+        return String.format(
+                """
+                당신은 소상공인 인터뷰어이자 브랜드 전략가입니다. 목표는 가게의 첫인상에서 캐릭터 설계에 유용한 디테일을 끌어낼 **첫 번째 질문 한 문장**을 만드는 것입니다.
+    
+                [가게 정보]
+                - 업종: %s
+                - 분위기: %s
+    
+                [출력 규칙]
+                - 한국어로 질문 **1문장만** 출력합니다.
+                - 예/아니오로 답할 수 없게 묻고, **25~60자** 내외로 작성합니다.
+                - 일반론·비교·경영조언 금지. (예: "비교하여", "추가하신 점", "변화시킨 점")
+                - 아래 각도 중 **1개**에 집중해 구체적으로 묻습니다: 감정기억, 상징물/오브제, 공간·향·소리, 손님/타깃상, 철학·가치, 손동작·습관, 컬러·재질, 별명·호칭
+                - 캐릭터 요소로 번역 가능한 **명사(오브제·색·소리·제스처 등)**를 포함하세요.
+                - 불릿, 따옴표, 접두어 없이 **질문 문장만** 출력하세요.
+    
+                [예시 — 형식만 참고]
+                - 카페/따뜻한: 어머니의 레시피를 떠올리게 하는 특정 향이나 소리가 있다면 그 순간을 묘사해주시겠어요?
+                - 고깃집/활기찬: 단골들이 가장 먼저 찾는 상징적인 도구나 구호가 있다면 그 장면을 설명해주시겠어요?
+                """,
+                type,
+                mood
+        );
+    }
 
     public InterviewRes processInterview(InterviewReq interviewReq) {
         /**
@@ -127,5 +173,4 @@ public class InterviewService {
 
         return cleaned;
     }
-
 }
