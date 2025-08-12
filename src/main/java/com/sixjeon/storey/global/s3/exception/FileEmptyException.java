@@ -1,7 +1,10 @@
 package com.sixjeon.storey.global.s3.exception;
 
-public class FileEmptyException extends RuntimeException {
-  public FileEmptyException(String message) {
-    super(message);
+import com.sixjeon.storey.global.exception.BaseException;
+
+public class FileEmptyException extends BaseException {
+  public FileEmptyException() {
+    super(S3ErrorCode.S3_FILE_EMPTY_400);
   }
 }
+

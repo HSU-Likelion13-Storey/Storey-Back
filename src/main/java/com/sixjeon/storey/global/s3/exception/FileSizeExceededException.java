@@ -1,7 +1,9 @@
 package com.sixjeon.storey.global.s3.exception;
 
-public class FileSizeExceededException extends RuntimeException {
-  public FileSizeExceededException(String message) {
-    super(message);
+import com.sixjeon.storey.global.exception.BaseException;
+
+public class FileSizeExceededException extends BaseException {
+  public FileSizeExceededException() {
+    super(S3ErrorCode.S3_FILE_SIZE_EXCEED_400);
   }
 }
