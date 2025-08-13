@@ -3,6 +3,7 @@ package com.sixjeon.storey.domain.event.service;
 import com.sixjeon.storey.domain.event.entity.Event;
 import com.sixjeon.storey.domain.event.exception.EventNotFoundException;
 import com.sixjeon.storey.domain.event.repository.EventRepository;
+import com.sixjeon.storey.domain.event.web.dto.SaveEventReq;
 import com.sixjeon.storey.domain.event.web.dto.SaveEventRes;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
@@ -33,6 +34,31 @@ public class EventServiceImpl implements EventService {
         return SaveEventRes.builder()
                 .content(event.getContent())
                 .build();
+
+    }
+
+    @Override
+    @Transactional
+    public void createOrUpdateEvent(SaveEventReq saveEventReq, String ownerLoginId) {
+        // 로그인한 사장님 가게 정보 조회
+        Store store = findStoreByOwnerLoginId(ownerLoginId);
+
+        // 가게 ID로 이벤트 조회 -> 존재 유무에 따라 다른 작업 수행
+        eventRepository.findByStoreId(store.getId())
+                .ifPresentOrElse(
+                      // 이벤트 존재 -> 내용 업데이트 (JPA 더티 채킹)
+                existingEvent -> existingEvent.updateContent(saveEventReq.getContent()),
+                            // 이벤트 없음 -> 새 이벤트 작성
+                            () -> {
+                                Event newEvent = Event.builder()
+                                        .content(saveEventReq.getContent())
+                                        .store(store)
+                                        .build();
+                                eventRepository.save(newEvent);
+
+                }
+                );
+
 
     }
 
