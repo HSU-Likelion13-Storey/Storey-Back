@@ -27,7 +27,10 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-
+    // 이벤트 내용 수정을 위한 편의 메소드
+    public void updateContent(String content){
+        this.content = content;
+    }
 
 
 }
