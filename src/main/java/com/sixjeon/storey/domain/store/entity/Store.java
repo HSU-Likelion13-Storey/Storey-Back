@@ -1,5 +1,6 @@
 package com.sixjeon.storey.domain.store.entity;
 
+import com.sixjeon.storey.domain.event.entity.Event;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -51,6 +52,9 @@ public class Store extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
+
+    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY)
+    private Event event;
 
 
 
