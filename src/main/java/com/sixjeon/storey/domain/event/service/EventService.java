@@ -8,4 +8,7 @@ public interface EventService {
     SaveEventRes findStoreEvent(String OwnerLoginId);
     // 이벤트 생성 및 수정
     void createOrUpdateEvent(SaveEventReq saveEventReq, String ownerLoginId);
+    // 이벤트 삭제
+    void deleteEvent(String ownerLoginId);
+
 }

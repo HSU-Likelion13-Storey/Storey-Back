@@ -32,11 +32,12 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(EventNotFoundException::new);
 
         return SaveEventRes.builder()
+                .eventId(event.getId())
                 .content(event.getContent())
                 .build();
 
     }
-
+    // 가게 이벤트 생성 및 수정
     @Override
     @Transactional
     public void createOrUpdateEvent(SaveEventReq saveEventReq, String ownerLoginId) {
@@ -46,7 +47,7 @@ public class EventServiceImpl implements EventService {
         // 가게 ID로 이벤트 조회 -> 존재 유무에 따라 다른 작업 수행
         eventRepository.findByStoreId(store.getId())
                 .ifPresentOrElse(
-                      // 이벤트 존재 -> 내용 업데이트 (JPA 더티 채킹)
+                      // 이벤트 존재 -> 내용 업데이트 (JPA 더티 채킹)-> 새로운 필드가 만들어지는게 아님
                 existingEvent -> existingEvent.updateContent(saveEventReq.getContent()),
                             // 이벤트 없음 -> 새 이벤트 작성
                             () -> {
@@ -60,6 +61,19 @@ public class EventServiceImpl implements EventService {
                 );
 
 
+    }
+
+    @Override
+    @Transactional
+    public void deleteEvent(String ownerLoginId) {
+        // 로그인한 사장님의 가게 정보를 조회
+        Store store = findStoreByOwnerLoginId(ownerLoginId);
+        // 가게 ID로 삭제할 이벤트 조회
+        Event event = eventRepository.findByStoreId(store.getId())
+                .orElseThrow(EventNotFoundException::new);
+        // 이벤트 삭제
+        eventRepository.delete(event);
+        
     }
 
     private Store findStoreByOwnerLoginId(String ownerLoginId) {
