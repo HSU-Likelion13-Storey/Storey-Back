@@ -3,15 +3,14 @@ package com.sixjeon.storey.domain.owner.entity;
 import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Owner extends BaseEntity {
 
     @Id
@@ -25,15 +24,10 @@ public class Owner extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "phone_number", nullable = false, unique = true)
-    private String phoneNumber;
+    @Column(nullable = false)
+    private String nickName;
 
-    @Builder
-    public Owner( String loginId, String password, String phoneNumber) {
-        this.loginId = loginId;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-    }
+
 
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Store store;

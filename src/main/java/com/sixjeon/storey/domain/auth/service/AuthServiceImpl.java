@@ -34,11 +34,7 @@ public class AuthServiceImpl implements AuthService {
         if (ownerRepository.existsByLoginId(signupReq.getLoginId()) || userRepository.existsByLoginId(signupReq.getLoginId())) {
             throw new DuplicateLoginIdException();
         }
-        // 전화번호 중복 확인
-        if (ownerRepository.existsByPhoneNumber(signupReq.getPhoneNumber()) || userRepository.existsByPhoneNumber(signupReq.getPhoneNumber())) {
-            throw new DuplicatePhoneNumberException();
 
-        }
         // String role을 Role enum로 변환
         Role role;
         try {
@@ -55,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 return new SignupRes(
                         owner.getId(),
                         owner.getLoginId(),
-                        owner.getPhoneNumber(),
+                        owner.getNickName(),
                         Role.OWNER
                 );
             case USER:
@@ -64,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
                 return new SignupRes(
                         user.getId(),
                         user.getLoginId(),
-                        user.getPhoneNumber(),
+                        user.getNickName(),
                         Role.USER);
             default:
                 throw new InvalidRoleException();

@@ -5,7 +5,7 @@ import com.sixjeon.storey.domain.auth.entity.Role;
 public record SignupRes(
         Long id,
         String loginId,
-        String phoneNumber,
+        String nickName,
         Role role
 ) {
 }

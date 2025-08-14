@@ -1,6 +1,5 @@
 package com.sixjeon.storey.domain.owner.service;
 
-import com.sixjeon.storey.domain.auth.exception.DuplicateLoginIdException;
 import com.sixjeon.storey.domain.auth.web.dto.SignupReq;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
@@ -18,14 +17,10 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public Owner createOwner(SignupReq signupReq) {
 
-//        if (ownerRepository.existsByLoginId(signupReq.getLoginId())) {
-//            throw new DuplicateLoginIdException();
-//        }
-
         Owner owner = Owner.builder()
                 .loginId(signupReq.getLoginId())
                 .password(bCryptPasswordEncoder.encode(signupReq.getPassword()))
-                .phoneNumber(signupReq.getPhoneNumber())
+                .nickName(signupReq.getNickName())
                 .build();
 
         return ownerRepository.save(owner);
