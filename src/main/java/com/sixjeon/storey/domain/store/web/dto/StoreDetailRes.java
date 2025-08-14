@@ -8,6 +8,7 @@ public record StoreDetailRes(
         Long storeId,
         String storeName,
         String addressMain,
+        String detailAddress,
         String eventContent
 ) {
 }
