@@ -65,7 +65,6 @@ public class StoreServiceImpl implements StoreService {
                 .addressMain(registerStoreReq.getAddressMain())
                 .addressDetail(registerStoreReq.getAddressDetail())
                 .postalCode(registerStoreReq.getPostalCode())
-                .inActive(false)
                 .build();
         // DB에 저장
         storeRepository.save(store);
