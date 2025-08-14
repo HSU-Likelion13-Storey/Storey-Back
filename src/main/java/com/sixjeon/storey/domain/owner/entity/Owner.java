@@ -1,5 +1,6 @@
 package com.sixjeon.storey.domain.owner.entity;
 
+import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -33,6 +34,9 @@ public class Owner extends BaseEntity {
         this.password = password;
         this.phoneNumber = phoneNumber;
     }
+
+    @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
+    private Store store;
 
 
 
