@@ -1,6 +1,5 @@
 package com.sixjeon.storey.domain.user.service;
 
-import com.sixjeon.storey.domain.user.entity.enums.ProviderType;
 import com.sixjeon.storey.domain.auth.web.dto.SignupReq;
 import com.sixjeon.storey.domain.user.entity.User;
 import com.sixjeon.storey.domain.user.repository.UserRepository;
@@ -18,14 +17,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(SignupReq signupReq) {
-//        if (userRepository.existsByLoginId(signupReq.getLoginId())) {
-//            throw new DuplicateLoginIdException();
-//        }
 
         User user = User.builder()
                 .loginId(signupReq.getLoginId())
                 .password(bCryptPasswordEncoder.encode(signupReq.getPassword()))
-                .provider(ProviderType.LOCAL)
                 .build();
 
         return userRepository.save(user);
