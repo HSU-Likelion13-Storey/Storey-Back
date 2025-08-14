@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/owner/store/event")
+@RequestMapping("/owner/event")
 @RequiredArgsConstructor
 public class EventController {
 
