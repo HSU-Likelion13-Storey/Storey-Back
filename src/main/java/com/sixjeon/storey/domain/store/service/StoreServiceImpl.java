@@ -75,16 +75,7 @@ public class StoreServiceImpl implements StoreService {
     @Override
     @Transactional
     public List<MapStoreRes> findAllStoresForMap() {
-        return storeRepository.findAllWithEvent().stream()
-                .map(store -> new MapStoreRes(
-                        store.getId(),
-                        store.getStoreName(),
-                        store.getAddressMain(),
-                        store.getLatitude(),
-                        store.getLongitude(),
-                        store.getEvent() != null ? store.getEvent().getContent() : null
-                ))
-                .collect(Collectors.toList());
+        return storeRepository.findAllWithEvent();
     }
 }
 
