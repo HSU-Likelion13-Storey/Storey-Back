@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/owner/**").hasRole("OWNER")
-                                .requestMatchers("/stores/**").hasRole("OWNER")
+                                .requestMatchers("/store/**").hasRole("OWNER")
                                 .anyRequest().permitAll()
                 )
 
