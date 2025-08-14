@@ -21,7 +21,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     * 지도에 표시할 모든 가게 정보를 조회하는 쿼리
     * Store와 Event를 Left Join함
     * */
-    @Query("SELECT new com.sixjeon.storey.domain.store.web.dto.MapStoreRes(s.id, s.storeName, s.addressMain, s.latitude, s.longitude, e.content) FROM Store s LEFT JOIN s.event e")
+    @Query("SELECT new com.sixjeon.storey.domain.store.web.dto.MapStoreRes(s.id, s.storeName, s.addressMain, s.latitude, s.longitude, e.content) " +
+            "FROM Store s LEFT JOIN s.event e")
     List<MapStoreRes> findAllWithEvent();
 
 
