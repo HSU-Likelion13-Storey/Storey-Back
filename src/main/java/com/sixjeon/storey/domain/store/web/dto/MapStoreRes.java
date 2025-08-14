@@ -8,8 +8,8 @@ public record MapStoreRes(
         Long storeId,
         String storeName,
         String addressMain,
-        double latitude,
-        double longitude,
+        Double latitude,
+        Double longitude,
         String eventContent
 ) {
 }
