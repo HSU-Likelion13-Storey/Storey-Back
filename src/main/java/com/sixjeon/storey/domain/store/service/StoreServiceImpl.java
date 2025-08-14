@@ -11,11 +11,18 @@ import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.domain.store.exception.AlreadyRegisterStoreException;
 import com.sixjeon.storey.domain.store.exception.DuplicateBusinessNumberException;
 import com.sixjeon.storey.domain.store.exception.InvalidBusinessNumberException;
+import com.sixjeon.storey.domain.store.exception.NotFoundStoreException;
 import com.sixjeon.storey.domain.store.repository.StoreRepository;
+import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
+import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,11 +68,33 @@ public class StoreServiceImpl implements StoreService {
                 .addressMain(registerStoreReq.getAddressMain())
                 .addressDetail(registerStoreReq.getAddressDetail())
                 .postalCode(registerStoreReq.getPostalCode())
-                .inActive(false)
                 .build();
         // DB에 저장
         storeRepository.save(store);
 
+    }
+
+    @Override
+    @Transactional
+    public List<MapStoreRes> findAllStoresForMap() {
+        return storeRepository.findAllWithEvent();
+    }
+
+    @Override
+    @Transactional
+    public StoreDetailRes findStoreDetail(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(NotFoundStoreException::new);
+
+        String eventContent = store.getEvent() != null ? store.getEvent().getContent() : null;
+
+        return StoreDetailRes.builder()
+                .storeId(store.getId())
+                .storeName(store.getStoreName())
+                .addressMain(store.getAddressMain())
+                .detailAddress(store.getAddressDetail())
+                .eventContent(eventContent)
+                .build();
     }
 }
 
