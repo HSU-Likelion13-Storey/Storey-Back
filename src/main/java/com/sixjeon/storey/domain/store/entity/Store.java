@@ -45,9 +45,6 @@ public class Store extends BaseEntity {
 
     private Double longitude;
 
-    @Column(name = "in_active",nullable = false)
-    @ColumnDefault("false")
-    private Boolean inActive;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
