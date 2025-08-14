@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .loginId(signupReq.getLoginId())
                 .password(bCryptPasswordEncoder.encode(signupReq.getPassword()))
+                .nickName(signupReq.getNickName())
                 .build();
 
         return userRepository.save(user);

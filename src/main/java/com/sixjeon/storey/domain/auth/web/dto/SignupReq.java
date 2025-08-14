@@ -21,6 +21,8 @@ public class SignupReq {
     @Size(min = 8, max = 20, message = "비밀번호는 8~20자 사이여야 합니다.")
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9]).*$", message = "비밀번호는 영문자와 숫자를 포함해야 합니다.")
     private String password;
+    @NotBlank(message = "닉네임는 필수 입력 값입니다.")
+    private String nickName;
 
     // enum을 DTO에서 직접 받으면 Jackson이 잘못된 값의 예외 처리가 복잡해지므로 String으로 받음
     private String role;

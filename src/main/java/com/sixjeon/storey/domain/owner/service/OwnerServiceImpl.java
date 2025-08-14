@@ -20,6 +20,7 @@ public class OwnerServiceImpl implements OwnerService {
         Owner owner = Owner.builder()
                 .loginId(signupReq.getLoginId())
                 .password(bCryptPasswordEncoder.encode(signupReq.getPassword()))
+                .nickName(signupReq.getNickName())
                 .build();
 
         return ownerRepository.save(owner);

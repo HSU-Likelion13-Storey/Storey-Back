@@ -51,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 return new SignupRes(
                         owner.getId(),
                         owner.getLoginId(),
+                        owner.getNickName(),
                         Role.OWNER
                 );
             case USER:
@@ -59,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
                 return new SignupRes(
                         user.getId(),
                         user.getLoginId(),
+                        user.getNickName(),
                         Role.USER);
             default:
                 throw new InvalidRoleException();
