@@ -33,7 +33,7 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/owner/**").hasRole("OWNER")
                                 .requestMatchers("/stores/**").hasRole("OWNER")
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
 
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
