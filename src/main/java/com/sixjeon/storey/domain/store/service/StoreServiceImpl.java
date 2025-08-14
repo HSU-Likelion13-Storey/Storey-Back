@@ -1,6 +1,5 @@
 package com.sixjeon.storey.domain.store.service;
 
-import com.sixjeon.storey.domain.auth.exception.DuplicatePhoneNumberException;
 import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
@@ -17,12 +16,10 @@ import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
 import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

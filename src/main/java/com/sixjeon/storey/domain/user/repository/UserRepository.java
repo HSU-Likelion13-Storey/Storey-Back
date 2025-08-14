@@ -9,7 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByLoginId(String loginId);
-    Boolean existsByPhoneNumber(String phoneNumber);
     // 사용자 로그인 ID로 조회 기능 추가
     Optional<User> findByLoginId(String LoginId);
 }

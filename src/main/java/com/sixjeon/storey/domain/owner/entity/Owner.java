@@ -25,14 +25,11 @@ public class Owner extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "phone_number", nullable = false, unique = true)
-    private String phoneNumber;
 
     @Builder
-    public Owner( String loginId, String password, String phoneNumber) {
+    public Owner( String loginId, String password) {
         this.loginId = loginId;
         this.password = password;
-        this.phoneNumber = phoneNumber;
     }
 
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)

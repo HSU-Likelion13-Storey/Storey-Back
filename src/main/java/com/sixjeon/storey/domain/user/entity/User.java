@@ -21,8 +21,6 @@ public class User extends BaseEntity {
     private String loginId;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false, unique = true)
-    private String phoneNumber;
     //Local(일반),KAKAO ..
     @Enumerated(EnumType.STRING)
     private ProviderType provider;
