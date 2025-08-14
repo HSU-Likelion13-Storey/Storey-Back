@@ -3,6 +3,7 @@ package com.sixjeon.storey.domain.store.web.controller;
 import com.sixjeon.storey.domain.store.service.StoreService;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
+import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -37,6 +38,14 @@ public class StoreController {
         List<MapStoreRes> mapStoreRes = storeService.findAllStoresForMap();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok(mapStoreRes));
+    }
+    
+    // 특정 가게 상세 정보 조회
+    @GetMapping("/store/{storeId}")
+    public ResponseEntity<SuccessResponse<?>> getStoreDetail(@PathVariable Long storeId) {
+        StoreDetailRes storeDetailRes = storeService.findStoreDetail(storeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok(storeDetailRes));
     }
 
 
