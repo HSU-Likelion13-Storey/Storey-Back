@@ -43,3 +43,5 @@ logs/
 
 # application.properties 파일 무시
 application.properties
+
+toss-test.html
