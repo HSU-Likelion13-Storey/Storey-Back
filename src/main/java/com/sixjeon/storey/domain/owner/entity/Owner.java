@@ -1,6 +1,7 @@
 package com.sixjeon.storey.domain.owner.entity;
 
 import com.sixjeon.storey.domain.store.entity.Store;
+import com.sixjeon.storey.domain.subscription.entity.Subscription;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,10 +28,11 @@ public class Owner extends BaseEntity {
     @Column(nullable = false)
     private String nickName;
 
-
-
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Store store;
+
+    @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
+    private Subscription subscription;
 
 
 
