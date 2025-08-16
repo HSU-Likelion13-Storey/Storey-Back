@@ -6,6 +6,6 @@ public record SubscriptionRes(
         String planName,
         String status,
         LocalDateTime endDate,
-        boolean hasCard
+        boolean hasPaymentMethod
 ) {
 }
