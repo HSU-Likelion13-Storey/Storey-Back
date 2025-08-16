@@ -4,6 +4,6 @@ import com.sixjeon.storey.global.exception.BaseException;
 
 public class PaymentFailedException extends BaseException {
     public PaymentFailedException() {
-        super(PaymentErrorCode.PAYMENT_FAILED_EXCEPTION_500);
+        super(PaymentErrorCode.PAYMENT_FAILED_EXCEPTION_400);
     }
 }
