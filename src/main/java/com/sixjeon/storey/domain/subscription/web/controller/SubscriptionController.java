@@ -3,6 +3,7 @@ package com.sixjeon.storey.domain.subscription.web.controller;
 import com.sixjeon.storey.domain.subscription.service.SubscriptionService;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
 import com.sixjeon.storey.domain.subscription.web.dto.PaymentConfirmReq;
+import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -10,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/owner/subscription")
@@ -38,5 +36,13 @@ public class SubscriptionController {
         subscriptionService.reactivateSubscription(paymentConfirmReq, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok("구독 재활성화 성공적으로 완료되었습니다."));
+    }
+
+    // 구독 상태 조회
+    @GetMapping
+    public ResponseEntity<SuccessResponse<?>> getSubscriptionStatus(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        SubscriptionRes subscriptionRes = subscriptionService.getSubscriptionStatus(customUserDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok(subscriptionRes));
     }
 }

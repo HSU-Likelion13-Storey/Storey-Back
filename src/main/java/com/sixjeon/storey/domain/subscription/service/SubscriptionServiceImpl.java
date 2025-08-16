@@ -8,14 +8,13 @@ import com.sixjeon.storey.domain.subscription.exception.SubscriptionNotFoundExce
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
 import com.sixjeon.storey.domain.subscription.web.dto.PaymentConfirmReq;
+import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
 import com.sixjeon.storey.global.external.toss.client.TossPaymentsClient;
 import com.sixjeon.storey.global.external.toss.exception.PaymentFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 
 import java.util.Map;
@@ -68,5 +67,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.registerCard(customerKey);
         subscription.renew();
     }
+
+    // 구독 상태 조회
+    @Override
+    @Transactional
+    public SubscriptionRes getSubscriptionStatus(String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+        Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
+                .orElseThrow(SubscriptionNotFoundException::new);
+        return new SubscriptionRes(
+                subscription.getPlanName(),
+                subscription.getStatus().name(),
+                subscription.getEndDate(),
+                subscription.getCustomerKey() != null
+        );
+    }
+
 
 }
