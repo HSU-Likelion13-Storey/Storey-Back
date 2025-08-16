@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -93,6 +95,32 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
                 .orElseThrow(SubscriptionNotFoundException::new);
         subscription.updateStatus(SubscriptionStatus.CANCELED);
+    }
+
+    @Override
+    public void renewSubscription() {
+        List<Subscription> targets = subscriptionRepository.findActiveSubscriptionEndingOn(
+                LocalDate.now(),
+                SubscriptionStatus.ACTIVE
+        );
+        for (Subscription subscription : targets) {
+            Owner owner = subscription.getOwner();
+
+            try {
+                String orderId = "renew_" + subscription.getId() + "_" + LocalDate.now();
+
+                tossPaymentsClient.requestBillingPayment(
+                        subscription.getCustomerKey(),
+                        PLAN_PRICE,
+                        orderId,
+                        PLAN_NAME
+                );
+                subscription.renew();
+            } catch (Exception e) {
+                subscription.updateStatus(SubscriptionStatus.EXPIRED);
+            }
+        }
+
     }
 
 

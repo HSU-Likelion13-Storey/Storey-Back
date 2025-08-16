@@ -15,4 +15,7 @@ public interface SubscriptionService {
     // 구독 취소
     void cancelSubscription(String ownerLoginId);
 
+    // 자동 구독 갱신
+    void renewSubscription();
+
 }

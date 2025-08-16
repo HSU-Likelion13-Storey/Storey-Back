@@ -48,7 +48,7 @@ public class SubscriptionController {
 
     // 구독 취소
     // 취소는 삭제가 아니기 때문 deleteMapping 아님
-    @PutMapping("cancel")
+    @PutMapping("/cancel")
     public ResponseEntity<SuccessResponse<?>> cancelSubscription(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         subscriptionService.cancelSubscription(customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
