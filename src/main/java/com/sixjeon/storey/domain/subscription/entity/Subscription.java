@@ -26,10 +26,10 @@ public class Subscription extends BaseEntity {
     @Column(nullable = false)
     private String planName;
     // 구독 시작일
-    @Column(nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
     // 구독 만료일
-    @Column(nullable = false)
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
     // 구독 상태
     @Enumerated(EnumType.STRING)
@@ -57,5 +57,6 @@ public class Subscription extends BaseEntity {
     // 구독을 갱신할 때 만료일을 한 달 뒤로 연장할 수 있는 메서드
     public void renew() {
         this.endDate = this.endDate.plusMonths(1);
+        this.status = SubscriptionStatus.ACTIVE;
     }
 }
