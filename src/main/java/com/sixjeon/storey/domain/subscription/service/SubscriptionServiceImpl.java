@@ -4,6 +4,7 @@ import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
 import com.sixjeon.storey.domain.subscription.entity.Subscription;
+import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import com.sixjeon.storey.domain.subscription.exception.SubscriptionNotFoundException;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
@@ -82,6 +83,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscription.getEndDate(),
                 subscription.getCustomerKey() != null
         );
+    }
+    // 구독 취소
+    @Override
+    @Transactional
+    public void cancelSubscription(String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+        Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
+                .orElseThrow(SubscriptionNotFoundException::new);
+        subscription.updateStatus(SubscriptionStatus.CANCELED);
     }
 
 

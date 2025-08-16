@@ -12,5 +12,7 @@ public interface SubscriptionService {
     void reactivateSubscription(PaymentConfirmReq paymentConfirmReq, String ownerLoginId);
     // 구독 상태 조회
     SubscriptionRes getSubscriptionStatus(String ownerLoginId);
+    // 구독 취소
+    void cancelSubscription(String ownerLoginId);
 
 }

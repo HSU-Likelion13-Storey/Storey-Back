@@ -45,4 +45,14 @@ public class SubscriptionController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok(subscriptionRes));
     }
+
+    // 구독 취소
+    // 취소는 삭제가 아니기 때문 deleteMapping 아님
+    @PutMapping("cancel")
+    public ResponseEntity<SuccessResponse<?>> cancelSubscription(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        subscriptionService.cancelSubscription(customUserDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok("구독 취소가 성공적으로 완료되었습니다."));
+    }
+
 }
