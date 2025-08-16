@@ -2,6 +2,7 @@ package com.sixjeon.storey.domain.subscription.web.controller;
 
 import com.sixjeon.storey.domain.subscription.service.SubscriptionService;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
+import com.sixjeon.storey.domain.subscription.web.dto.PaymentConfirmReq;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -28,5 +29,14 @@ public class SubscriptionController {
         subscriptionService.registerCard(cardRegistrationReq, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok("카드 정보 성공적으로 등록되었습니다."));
+    }
+
+    // 구독 재활성화
+    @PostMapping("/renew")
+    public ResponseEntity<SuccessResponse<?>> renewSubscription(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                 @RequestBody @Valid PaymentConfirmReq paymentConfirmReq) {
+        subscriptionService.reactivateSubscription(paymentConfirmReq, customUserDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok("구독 재활성화 성공적으로 완료되었습니다."));
     }
 }
