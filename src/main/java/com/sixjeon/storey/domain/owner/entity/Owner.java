@@ -28,11 +28,24 @@ public class Owner extends BaseEntity {
     @Column(nullable = false)
     private String nickName;
 
+    @Column(name = "customer_key")
+    private String customerKey;
+
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Store store;
 
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Subscription subscription;
+
+    // 결제 카드 등록할 때 customerKey를 등록 메서드
+    public void registerCard(String customerKey) {
+        this.customerKey = customerKey;
+    }
+
+    // 카드 등록 여부 확인 메서드
+    public boolean hasRegisteredCard() {
+        return this.customerKey != null;
+    }
 
 
 
