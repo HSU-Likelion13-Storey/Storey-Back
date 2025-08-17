@@ -20,7 +20,7 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    // 무료 체험 중 결제 카드 등록 API
+    //  카드 등록 API
     @PostMapping("/card")
     public ResponseEntity<SuccessResponse<?>> registerCard(@RequestBody @Valid CardRegistrationReq cardRegistrationReq,
                                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -53,6 +53,14 @@ public class SubscriptionController {
         subscriptionService.cancelSubscription(customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok("구독 취소가 성공적으로 완료되었습니다."));
+    }
+
+    // 무료 체험 시작 API
+    @PostMapping("/trial")
+    public ResponseEntity<SuccessResponse<?>> startTrial(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        subscriptionService.startFreeTrial(customUserDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok("무료 체험 시작이 성공적으로 완료되었습니다."));
     }
 
 }
