@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
                         .planName("MASCOT_BRANDING_PASS")
                         .startDate(null)
                         .endDate(null)
-                        .status(SubscriptionStatus.TRAIL_AVAILABLE)
+                        .status(SubscriptionStatus.TRIAL_AVAILABLE)
                         .build();
 
                 // Subscriptio을 DB에 저장
