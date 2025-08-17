@@ -10,6 +10,7 @@ public enum AuthErrorCode implements BaseResponseCode {
     AUTH_DUPLICATE_LOGINID_409("AUTH_DULICATE_LOGINID_409",409,"이미 존재하는 아이디입니다."),
     AUTH_INVALID_PASSWORD_401("AUTH_INVALID_PASSWORD_401", 401, "비밀번호가 일치하지 않습니다."),
     USER_NOT_FOUND_404("USER_NOT_FOUND_404",404,"사용자가 찾을 수 없습니다."),
+    AUTH_EXPIRED_REFRESH_401("AUTH_EXPIRED_REFRESH_401",401,"리프래시 토큰이 만료되었습니다."),
     ROLE_INVALID_400("ROLE_INVALID_400",400,"유효하지 않은 사용자 유형입니다.");
 
     private final String code;
