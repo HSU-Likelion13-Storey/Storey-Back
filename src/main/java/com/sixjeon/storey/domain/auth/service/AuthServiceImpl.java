@@ -15,6 +15,8 @@ import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.user.entity.User;
 import com.sixjeon.storey.domain.user.repository.UserRepository;
 import com.sixjeon.storey.domain.user.service.UserService;
+import com.sixjeon.storey.global.security.exception.RefreshTokenExpiredException;
+import com.sixjeon.storey.global.security.exception.RefreshTokenNotFoundException;
 import com.sixjeon.storey.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -150,7 +152,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginRes refreshAccessToken(String refreshTokenValue) {
         // Refresh Token 검증
         if (!jwtTokenProvider.validateToken(refreshTokenValue)) {
-            throw new ExpiredRefreshException();
+            throw new RefreshTokenExpiredException();
         }
 
         // Owner 리프래시 토큰 찾기
@@ -190,7 +192,7 @@ public class AuthServiceImpl implements AuthService {
 
             return new LoginRes(newAccessToken, newRefreshToken);
         }
-        throw new UserNotFoundException();
+        throw new RefreshTokenNotFoundException();
 
     }
 
