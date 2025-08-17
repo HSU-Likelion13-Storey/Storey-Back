@@ -6,8 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CardRegistrationReq {
-    // 토스페이먼츠에서 카드 등록 후 받은 authKey
-    @NotBlank(message = "인증 키는 필수입니다")
-    String authKey;
+public class SubscriptionRenewReq {
+    @NotBlank(message = "주문 ID는 필수입니다.")
+    private String orderId;
 }

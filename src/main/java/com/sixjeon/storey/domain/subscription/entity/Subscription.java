@@ -35,21 +35,11 @@ public class Subscription extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SubscriptionStatus status;
-    /*
-    * 토스페이먼츠에서 발급받은 결제용 키
-    * 카드 등록 전까지는 null값
-    * 실제 카드 대체
-    * */
-    @Column(unique = true)
-    private String customerKey;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
-    // 결제 카드 등록할 때 customerKey를 등록 메서드
-    public void registerCard(String customerKey) {
-        this.customerKey = customerKey;
-    }
+
     // 구독 상태 변경 메서드
     public void updateStatus(SubscriptionStatus status) {
         this.status = status;

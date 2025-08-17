@@ -2,7 +2,7 @@ package com.sixjeon.storey.domain.subscription.web.controller;
 
 import com.sixjeon.storey.domain.subscription.service.SubscriptionService;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
-import com.sixjeon.storey.domain.subscription.web.dto.PaymentConfirmReq;
+import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRenewReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
@@ -32,8 +32,8 @@ public class SubscriptionController {
     // 구독 재활성화
     @PostMapping("/renew")
     public ResponseEntity<SuccessResponse<?>> renewSubscription(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                 @RequestBody @Valid PaymentConfirmReq paymentConfirmReq) {
-        subscriptionService.reactivateSubscription(paymentConfirmReq, customUserDetails.getUsername());
+                                                                 @RequestBody @Valid SubscriptionRenewReq subscriptionRenewReq) {
+        subscriptionService.reactivateSubscription(subscriptionRenewReq, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok("구독 재활성화 성공적으로 완료되었습니다."));
     }

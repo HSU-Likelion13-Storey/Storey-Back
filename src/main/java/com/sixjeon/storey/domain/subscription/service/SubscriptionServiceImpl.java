@@ -8,7 +8,7 @@ import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import com.sixjeon.storey.domain.subscription.exception.SubscriptionNotFoundException;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
-import com.sixjeon.storey.domain.subscription.web.dto.PaymentConfirmReq;
+import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRenewReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
 import com.sixjeon.storey.global.external.toss.client.TossPaymentsClient;
 import com.sixjeon.storey.global.external.toss.exception.PaymentFailedException;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -33,7 +32,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final TossPaymentsClient tossPaymentsClient;
 
     private final String PLAN_NAME = "마스코트 브랜딩 패스";
-    private final Long PLAN_PRICE = 29000L;
+    private final Long PLAN_PRICE = 20900L;
 
     // [무료 체험 중]인 사장님이 결제 카드를 미리 등록하는 로직
     @Override
@@ -41,33 +40,51 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void registerCard(CardRegistrationReq cardRegistrationReq, String ownerLoginId) {
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
-        Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
-                .orElseThrow(SubscriptionNotFoundException::new);
-        subscription.registerCard(cardRegistrationReq.getCustomerKey());
+
+        // Owner ID를 customerKey로 사용
+        String customerKey = "owner_" + owner.getId();
+
+        // 토스 페이먼트 API를 통해 authKey로 빌링키 발금
+        String billingKey = tossPaymentsClient.issueBillingKey(
+                cardRegistrationReq.getAuthKey(),
+                customerKey
+        );
+
+        owner.registerCard(billingKey);
+
+        ownerRepository.save(owner);
+
     }
 
     @Override
     @Transactional
-    public void reactivateSubscription(PaymentConfirmReq paymentConfirmReq, String ownerLoginId) {
-        if (!Objects.equals(paymentConfirmReq.getAmount(), PLAN_PRICE)) {
-            throw new PaymentFailedException();
-        }
+    public void reactivateSubscription(SubscriptionRenewReq subscriptionRenewReq, String ownerLoginId) {
+
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
 
-        // 토스페이먼츠에 결제 승인 API 호출
-        Map<String, Object> tossResponse = tossPaymentsClient.requestPaymentConfirm(paymentConfirmReq);
-
-        String customerKey = (String) tossResponse.get("customerKey");
-
-        if (customerKey == null) {
-            throw new PaymentFailedException();
-        }
-
+        // 구독 정보 조회 및 갱신
         Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
                 .orElseThrow(SubscriptionNotFoundException::new);
 
-        subscription.registerCard(customerKey);
+        if (!owner.hasRegisteredCard()) {
+            throw new PaymentFailedException();
+        }
+
+
+        // 토스페이먼츠에 결제 승인 API 호출
+        Map<String, Object> tossResponse = tossPaymentsClient.requestBillingPayment(
+                owner.getCustomerKey(),
+                PLAN_PRICE,
+                subscriptionRenewReq.getOrderId(),
+                PLAN_NAME);
+
+        String status = (String) tossResponse.get("status");
+
+        if (!"DONE".equals(status)) {
+            throw new PaymentFailedException();
+        }
+
         subscription.renew();
     }
 
@@ -83,8 +100,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscription.getPlanName(),
                 subscription.getStatus().name(),
                 subscription.getEndDate(),
-                subscription.getCustomerKey() != null
-        );
+                owner.hasRegisteredCard()        );
     }
     // 구독 취소
     @Override
@@ -110,7 +126,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 String orderId = "renew_" + subscription.getId() + "_" + LocalDate.now();
 
                 tossPaymentsClient.requestBillingPayment(
-                        subscription.getCustomerKey(),
+                        owner.getCustomerKey(),
                         PLAN_PRICE,
                         orderId,
                         PLAN_NAME

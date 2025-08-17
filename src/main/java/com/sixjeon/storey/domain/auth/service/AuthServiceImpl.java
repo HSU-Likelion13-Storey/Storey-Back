@@ -64,7 +64,6 @@ public class AuthServiceImpl implements AuthService {
                         .startDate(LocalDateTime.now())
                         .endDate(LocalDateTime.now().plusMonths(1)) // 만료일은 시작일로부터 1개월 뒤
                         .status(SubscriptionStatus.ACTIVE) // 무료 체험 -> 활성
-                        .customerKey(null)
                         .build();
 
                 // Subscriptio을 DB에 저장
