@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Slf4j
@@ -23,6 +24,9 @@ public class JwtTokenProvider {
 
     @Value("${jwt.expiration}")
     private long expiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
 
     private SecretKey key;
 
@@ -54,6 +58,20 @@ public class JwtTokenProvider {
                 // 토큰 생성
                 .compact();
     }
+
+    // refresh 토큰 설정
+    public String generateRefreshToken(String loginId) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + refreshExpiration);
+        return Jwts.builder()
+                .claim("tokenType", "REFRESH")
+                .subject(loginId)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(key)
+                .compact();
+    }
+
 
     /*
     * JWT 토큰 유효성과 만료일자 검증
