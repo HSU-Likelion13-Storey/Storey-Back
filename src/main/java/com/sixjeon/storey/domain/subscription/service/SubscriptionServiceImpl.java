@@ -114,11 +114,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .orElseThrow(UserNotFoundException::new);
         Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
                 .orElseThrow(SubscriptionNotFoundException::new);
-        subscription.updateStatus(SubscriptionStatus.CANCELED);
+        subscription.updateStatus(SubscriptionStatus.CANCELED_REQUESTED);
     }
 
     @Override
     public void renewSubscription() {
+        // ACTIVE 상태인 구독 중 만료되는 것들 처리
         List<Subscription> targets = subscriptionRepository.findActiveSubscriptionEndingOn(
                 LocalDate.now(),
                 SubscriptionStatus.ACTIVE
@@ -140,8 +141,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscription.updateStatus(SubscriptionStatus.EXPIRED);
             }
         }
+        // CANCELED_REQUESTED 상태인 구독 중 만료되는 것들 처리
+        List<Subscription> canceledRequests = subscriptionRepository.findActiveSubscriptionEndingOn(
+                LocalDate.now(),
+                SubscriptionStatus.CANCELED_REQUESTED
+        );
+        for (Subscription subscription : canceledRequests) {
+            subscription.updateStatus(SubscriptionStatus.CANCELED);
+        }
 
     }
+
 
 
 }
