@@ -14,4 +14,6 @@ public interface AuthService {
     LoginRes userSignin(LoginReq loginReq);
     // 토큰 만료시 갱신
     LoginRes refreshAccessToken(String refreshTokenValue);
+    // 로그아웃
+    void logout(String loginId);
 }

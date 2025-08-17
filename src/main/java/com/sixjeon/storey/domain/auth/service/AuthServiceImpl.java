@@ -196,6 +196,23 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    @Override
+    public void logout(String loginId) {
+        Owner owenr = ownerRepository.findByLoginId(loginId).orElse(null);
+        if (owenr != null) {
+            owenr.deleteRefreshToken();
+            ownerRepository.save(owenr);
+            ownerRepository.save(owenr);
+        }
+        User user = userRepository.findByLoginId(loginId).orElse(null);
+        if (user != null) {
+            user.deleteRefreshToken();
+            userRepository.save(user);
+            userRepository.save(user);
+        }
+        throw new UserNotFoundException();
+    }
+
 
 }
 
