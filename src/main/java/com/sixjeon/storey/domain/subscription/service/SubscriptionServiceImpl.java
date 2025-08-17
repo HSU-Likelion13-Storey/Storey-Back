@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +70,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new PaymentFailedException();
         }
 
+        // orderId가 비어있으면 자동 생성
+        String orderId = subscriptionRenewReq.getOrderId();
+        if (orderId == null || orderId.trim().isEmpty()) {
+            orderId = "subscription_renew_" + owner.getId() + "_" + System.currentTimeMillis();
+        }
 
         // 토스페이먼츠에 결제 승인 API 호출
         Map<String, Object> tossResponse = tossPaymentsClient.requestBillingPayment(
                 owner.getBillingKey(),
                 PLAN_PRICE,
-                subscriptionRenewReq.getOrderId(),
+                orderId,
                 PLAN_NAME);
 
         String status = (String) tossResponse.get("status");
