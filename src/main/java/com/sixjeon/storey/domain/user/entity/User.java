@@ -22,5 +22,18 @@ public class User extends BaseEntity {
     private String password;
     @Column(nullable = false)
     private String nickName;
+    
+    @Column(name = "refresh_token" , length = 500)
+    private String refreshToken;
+
+    // Refresh Token 업데이트 메서드
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    // Refresh Token 삭제
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
+    }
 
 }
