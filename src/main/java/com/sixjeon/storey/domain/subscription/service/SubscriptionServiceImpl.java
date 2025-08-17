@@ -5,6 +5,7 @@ import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
 import com.sixjeon.storey.domain.subscription.entity.Subscription;
 import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
+import com.sixjeon.storey.domain.subscription.exception.InvalidSubscriptionStatusException;
 import com.sixjeon.storey.domain.subscription.exception.SubscriptionNotFoundException;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
@@ -33,7 +34,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final String PLAN_NAME = "마스코트 브랜딩 패스";
     private final Long PLAN_PRICE = 20900L;
 
-    // [무료 체험 중]인 사장님이 결제 카드를 미리 등록하는 로직
+    // 카드 등록 로직
     @Override
     @Transactional
     public void registerCard(CardRegistrationReq cardRegistrationReq, String ownerLoginId) {
@@ -152,6 +153,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     }
 
+    @Override
+    @Transactional
+    public void startFreeTrial(String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
 
+        Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
+                .orElseThrow(SubscriptionNotFoundException::new);
 
+        if (!SubscriptionStatus.TRIAL_AVAILABLE.equals(subscription.getStatus())) {
+                throw new InvalidSubscriptionStatusException();
+        }
+        subscription.startTrial();
+    }
 }
