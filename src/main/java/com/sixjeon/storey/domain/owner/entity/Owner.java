@@ -28,8 +28,8 @@ public class Owner extends BaseEntity {
     @Column(nullable = false)
     private String nickName;
 
-    @Column(name = "customer_key")
-    private String customerKey;
+    @Column(name = "billing_key")
+    private String billingKey;
 
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Store store;
@@ -38,13 +38,13 @@ public class Owner extends BaseEntity {
     private Subscription subscription;
 
     // 결제 카드 등록할 때 customerKey를 등록 메서드
-    public void registerCard(String customerKey) {
-        this.customerKey = customerKey;
+    public void registerCard(String billingKey) {
+        this.billingKey = billingKey;
     }
 
     // 카드 등록 여부 확인 메서드
     public boolean hasRegisteredCard() {
-        return this.customerKey != null;
+        return this.billingKey != null;
     }
 
 

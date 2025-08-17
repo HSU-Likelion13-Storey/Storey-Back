@@ -74,7 +74,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         // 토스페이먼츠에 결제 승인 API 호출
         Map<String, Object> tossResponse = tossPaymentsClient.requestBillingPayment(
-                owner.getCustomerKey(),
+                owner.getBillingKey(),
                 PLAN_PRICE,
                 subscriptionRenewReq.getOrderId(),
                 PLAN_NAME);
@@ -126,7 +126,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 String orderId = "renew_" + subscription.getId() + "_" + LocalDate.now();
 
                 tossPaymentsClient.requestBillingPayment(
-                        owner.getCustomerKey(),
+                        owner.getBillingKey(),
                         PLAN_PRICE,
                         orderId,
                         PLAN_NAME
