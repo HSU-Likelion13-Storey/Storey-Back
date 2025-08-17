@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateToken(
+        String accessToken = jwtTokenProvider.generateAccessToken(
                 owner.getId(),
                 owner.getLoginId(),
                 Role.OWNER
@@ -130,7 +130,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidPasswordException();
         }
         // JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateToken(
+        String accessToken = jwtTokenProvider.generateAccessToken(
                 user.getId(),
                 user.getLoginId(),
                 Role.USER
@@ -144,6 +144,57 @@ public class AuthServiceImpl implements AuthService {
 
         return new LoginRes(accessToken, refreshToken);
     }
+
+    @Override
+    @Transactional
+    public LoginRes refreshAccessToken(String refreshTokenValue) {
+        // Refresh Token 검증
+        if (!jwtTokenProvider.validateToken(refreshTokenValue)) {
+            throw new ExpiredRefreshException();
+        }
+
+        // Owner 리프래시 토큰 찾기
+        Owner owner = ownerRepository.findByRefreshToken(refreshTokenValue).orElse(null);
+        if (owner != null) {
+
+            String newAccessToken = jwtTokenProvider.generateAccessToken(
+                    owner.getId(),
+                    owner.getLoginId(),
+                    Role.OWNER
+            );
+
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(owner.getLoginId());
+
+            // 새로운 토큰으로 업데이트
+            owner.updateRefreshToken(newRefreshToken);
+            ownerRepository.save(owner);
+
+            return new LoginRes(newAccessToken, newRefreshToken);
+
+        }
+
+        User user = userRepository.findByRefreshToken(refreshTokenValue).orElse(null);
+        if (user != null) {
+
+            // 새로운 토큰 생성
+            String newAccessToken = jwtTokenProvider.generateAccessToken(
+                    user.getId(),
+                    user.getLoginId(),
+                    Role.USER
+            );
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getLoginId());
+
+            // 새로운 토큰으로 업데이트
+            user.updateRefreshToken(newRefreshToken);
+            userRepository.save(user);
+
+            return new LoginRes(newAccessToken, newRefreshToken);
+        }
+        throw new UserNotFoundException();
+
+    }
+
+
 }
 
 

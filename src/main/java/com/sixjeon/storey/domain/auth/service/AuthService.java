@@ -12,4 +12,6 @@ public interface AuthService {
     LoginRes ownerSignin(LoginReq loginReq);
     // 회원 로그인
     LoginRes userSignin(LoginReq loginReq);
+    // 토큰 만료시 갱신
+    LoginRes refreshAccessToken(String refreshTokenValue);
 }
