@@ -20,9 +20,10 @@ public class TossPaymentsConfig {
 
     @Bean
     public TossPaymentsClient tossPaymentsClient(WebClient.Builder webClientBuilder) {
-        WebClient webClient = webClientBuilder.build();
+        WebClient webClient = webClientBuilder
+                .baseUrl(apiUrl)
+                .build();
         return new TossPaymentsClient(webClient, secretKey, apiUrl);
-
     }
 
 }
