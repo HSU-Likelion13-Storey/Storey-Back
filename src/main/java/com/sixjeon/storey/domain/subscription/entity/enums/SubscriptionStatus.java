@@ -5,5 +5,5 @@ public enum SubscriptionStatus {
     CANCELED_REQUESTED, // 해지 신청(유효일까지 지속)
     CANCELED, // 해지 취소
     EXPIRED, // 구독 기간 만료된 상태
-    TRAIL_AVAILABLE // 무료 체험 가능 상태
+    TRIAL_AVAILABLE // 무료 체험 가능 상태
 }

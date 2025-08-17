@@ -26,10 +26,10 @@ public class Subscription extends BaseEntity {
     @Column(nullable = false)
     private String planName;
     // 구독 시작일
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = true)
     private LocalDateTime startDate;
     // 구독 만료일
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date", nullable = true)
     private LocalDateTime endDate;
     // 구독 상태
     @Enumerated(EnumType.STRING)
