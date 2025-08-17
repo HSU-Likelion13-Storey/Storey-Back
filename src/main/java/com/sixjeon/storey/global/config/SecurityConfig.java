@@ -28,12 +28,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
                 .sessionManagement(session ->  session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/auth/signup", "/auth/owner/login", "/auth/user/login", "/auth/refresh").permitAll()
+                                .requestMatchers("/user/logout").authenticated()
                                 .requestMatchers("/owner/**").hasRole("OWNER")
                                 .requestMatchers("/store/**").hasRole("OWNER")
-                                .anyRequest().permitAll()
+                                .requestMatchers("/stores/**").permitAll()
+                                .anyRequest().authenticated()
                 )
 
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

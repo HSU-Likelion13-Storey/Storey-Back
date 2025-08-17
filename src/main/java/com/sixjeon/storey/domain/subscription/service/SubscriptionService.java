@@ -18,4 +18,7 @@ public interface SubscriptionService {
     // 자동 구독 갱신
     void renewSubscription();
 
+    // 무료 체험 시작 로직
+    void startFreeTrial(String ownerLoginId);
+
 }
