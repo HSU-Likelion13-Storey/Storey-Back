@@ -35,6 +35,21 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// 유효성 검사를 위한 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
+	// RestTemplate 대신 비동기적 방식인 WebClient를 사용하기 위한 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// JWT 라이브러리 의존성
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	// AWS S3 연동을 위한 의존성 추가
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1'
 }
 
 tasks.named('test') {
