@@ -60,13 +60,13 @@ public class AuthServiceImpl implements AuthService {
                 // owner 저장
                 ownerRepository.save(owner);
 
-                // 추가(1개월 무료 체험 구독)
+                // 1달 무료 체험을 할 수 있는 자격이 주어짐
                 Subscription freeTrial = Subscription.builder()
                         .owner(owner) // owner 매핑
                         .planName("MASCOT_BRANDING_PASS")
-                        .startDate(LocalDateTime.now())
-                        .endDate(LocalDateTime.now().plusMonths(1)) // 만료일은 시작일로부터 1개월 뒤
-                        .status(SubscriptionStatus.ACTIVE) // 무료 체험 -> 활성
+                        .startDate(null)
+                        .endDate(null)
+                        .status(SubscriptionStatus.TRAIL_AVAILABLE)
                         .build();
 
                 // Subscriptio을 DB에 저장
