@@ -1,8 +1,8 @@
-package com.sixjeon.storey.global.s3.service;
+package com.sixjeon.storey.global.external.s3.service;
 
-import com.sixjeon.storey.global.s3.exception.FileEmptyException;
-import com.sixjeon.storey.global.s3.exception.FileSizeExceededException;
-import com.sixjeon.storey.global.s3.exception.InvalidFileExtensionException;
+import com.sixjeon.storey.global.external.s3.exception.FileEmptyException;
+import com.sixjeon.storey.global.external.s3.exception.FileSizeExceededException;
+import com.sixjeon.storey.global.external.s3.exception.InvalidFileExtensionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

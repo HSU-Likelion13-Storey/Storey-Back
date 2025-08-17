@@ -1,9 +1,9 @@
-package com.sixjeon.storey.global.s3;
+package com.sixjeon.storey.global.external.s3;
 
 // 테스트용 controller로서 추후 삭제
 
 import com.sixjeon.storey.global.response.SuccessResponse;
-import com.sixjeon.storey.global.s3.service.S3Service;
+import com.sixjeon.storey.global.external.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

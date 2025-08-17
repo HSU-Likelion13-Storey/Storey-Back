@@ -1,6 +1,7 @@
 package com.sixjeon.storey.domain.owner.entity;
 
 import com.sixjeon.storey.domain.store.entity.Store;
+import com.sixjeon.storey.domain.subscription.entity.Subscription;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,10 +28,24 @@ public class Owner extends BaseEntity {
     @Column(nullable = false)
     private String nickName;
 
-
+    @Column(name = "billing_key")
+    private String billingKey;
 
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Store store;
+
+    @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
+    private Subscription subscription;
+
+    // 결제 카드 등록할 때 customerKey를 등록 메서드
+    public void registerCard(String billingKey) {
+        this.billingKey = billingKey;
+    }
+
+    // 카드 등록 여부 확인 메서드
+    public boolean hasRegisteredCard() {
+        return this.billingKey != null;
+    }
 
 
 

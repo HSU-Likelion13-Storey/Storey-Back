@@ -9,6 +9,9 @@ import com.sixjeon.storey.domain.auth.web.dto.SignupRes;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
 import com.sixjeon.storey.domain.owner.service.OwnerService;
+import com.sixjeon.storey.domain.subscription.entity.Subscription;
+import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
+import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.user.entity.User;
 import com.sixjeon.storey.domain.user.repository.UserRepository;
 import com.sixjeon.storey.domain.user.service.UserService;
@@ -17,12 +20,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final OwnerService ownerService;
     private final UserService userService;
     private final OwnerRepository ownerRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -47,6 +53,24 @@ public class AuthServiceImpl implements AuthService {
         switch (role) {
             case OWNER:
                 Owner owner = ownerService.createOwner(signupReq);
+
+                // owner 저장
+                ownerRepository.save(owner);
+
+                // 추가(1개월 무료 체험 구독)
+                Subscription freeTrial = Subscription.builder()
+                        .owner(owner) // owner 매핑
+                        .planName("MASCOT_BRANDING_PASS")
+                        .startDate(LocalDateTime.now())
+                        .endDate(LocalDateTime.now().plusMonths(1)) // 만료일은 시작일로부터 1개월 뒤
+                        .status(SubscriptionStatus.ACTIVE) // 무료 체험 -> 활성
+                        .build();
+
+                // Subscriptio을 DB에 저장
+                subscriptionRepository.save(freeTrial);
+
+                // Owner 엔티티에 Subscription dusruf
+                owner.setSubscription(freeTrial);
 
                 return new SignupRes(
                         owner.getId(),

@@ -1,4 +1,4 @@
-package com.sixjeon.storey.global.s3.exception;
+package com.sixjeon.storey.global.external.s3.exception;
 
 import com.sixjeon.storey.global.response.code.BaseResponseCode;
 import lombok.Getter;
