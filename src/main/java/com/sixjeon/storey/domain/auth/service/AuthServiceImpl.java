@@ -19,6 +19,7 @@ import com.sixjeon.storey.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -92,6 +93,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginRes ownerSignin(LoginReq loginReq) {
         // 사장님 검색
         Owner owner = ownerRepository.findByLoginId(loginReq.getLoginId())
@@ -107,7 +109,15 @@ public class AuthServiceImpl implements AuthService {
                 owner.getLoginId(),
                 Role.OWNER
         );
-        return new LoginRes(accessToken);
+
+        // Refresh Token 생성
+        String refreshToken = jwtTokenProvider.generateRefreshToken(owner.getLoginId());
+
+        // Refresh Token 업데이트
+        owner.updateRefreshToken(refreshToken);
+        ownerRepository.save(owner);
+
+        return new LoginRes(accessToken, refreshToken);
     }
 
     @Override
@@ -125,8 +135,14 @@ public class AuthServiceImpl implements AuthService {
                 user.getLoginId(),
                 Role.USER
         );
+// Refresh Token 생성
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getLoginId());
 
-        return new LoginRes(accessToken);
+        // Refresh Token 업데이트
+        user.updateRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        return new LoginRes(accessToken, refreshToken);
     }
 }
 
