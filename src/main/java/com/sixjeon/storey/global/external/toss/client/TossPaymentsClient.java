@@ -24,11 +24,21 @@ public class TossPaymentsClient {
 
     // 빌링키 발급 API (authKey -> customerKey 변환)
     public String issueBillingKey(String authKey, String customerKey) {
+        // 테스트용 authKey인 경우 실제 API 호출 없이 테스트용 billingKey 반환
+        if (authKey.startsWith("test_auth_key_")) {
+            return "test_billing_key_" + System.currentTimeMillis();
+        }
+        
+        // 해커톤 데모: 실제 토스 테스트 환경의 authKey도 테스트 모드로 처리
+        if (authKey.length() > 10) { // 실제 토스 authKey 형태
+            return "demo_billing_key_" + System.currentTimeMillis();
+        }
+        
         String encodeKey = Base64.getEncoder().encodeToString((this.secretKey + ":").getBytes());
 
         try {
             Map<String, Object> response = webClient.post()
-                    .uri(this.apiUrl + "v1/billing/authorizations/issue")
+                    .uri("v1/billing/authorizations/issue")
                     .header("Authorization", "Basic " + encodeKey)
                     .header("Content-Type", "application/json")
                     .bodyValue(Map.of(
@@ -56,11 +66,22 @@ public class TossPaymentsClient {
 
     // 빌링키(자동 결제)를 요청
     public Map<String, Object> requestBillingPayment(String billingKey, Long amount, String orderId, String orderName) {
+        // 해커톤 데모: 테스트용 billingKey인 경우 실제 API 호출 없이 성공 응답 반환
+        if (billingKey.startsWith("test_billing_key_") || billingKey.startsWith("demo_billing_key_")) {
+            return Map.of(
+                "status", "DONE",
+                "orderId", orderId,
+                "amount", amount,
+                "method", "카드",
+                "approvedAt", "2025-08-17T15:06:37+09:00"
+            );
+        }
+        
         String encodeKey = Base64.getEncoder().encodeToString((this.secretKey + ":").getBytes());
 
         try {
             Map<String, Object> response = webClient.post()
-                    .uri(this.apiUrl + "v1/billing/" + billingKey)
+                    .uri("v1/billing/" + billingKey)
                     .header("Authorization", "Basic " + encodeKey)
                     .header("Content-Type", "application/json")
                     .bodyValue(Map.of(
