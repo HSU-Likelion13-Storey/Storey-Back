@@ -15,10 +15,13 @@ import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.user.entity.User;
 import com.sixjeon.storey.domain.user.repository.UserRepository;
 import com.sixjeon.storey.domain.user.service.UserService;
+import com.sixjeon.storey.global.security.exception.RefreshTokenExpiredException;
+import com.sixjeon.storey.global.security.exception.RefreshTokenNotFoundException;
 import com.sixjeon.storey.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -92,6 +95,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginRes ownerSignin(LoginReq loginReq) {
         // 사장님 검색
         Owner owner = ownerRepository.findByLoginId(loginReq.getLoginId())
@@ -102,12 +106,20 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateToken(
+        String accessToken = jwtTokenProvider.generateAccessToken(
                 owner.getId(),
                 owner.getLoginId(),
                 Role.OWNER
         );
-        return new LoginRes(accessToken);
+
+        // Refresh Token 생성
+        String refreshToken = jwtTokenProvider.generateRefreshToken(owner.getLoginId());
+
+        // Refresh Token 업데이트
+        owner.updateRefreshToken(refreshToken);
+        ownerRepository.save(owner);
+
+        return new LoginRes(accessToken, refreshToken);
     }
 
     @Override
@@ -120,14 +132,88 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidPasswordException();
         }
         // JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateToken(
+        String accessToken = jwtTokenProvider.generateAccessToken(
                 user.getId(),
                 user.getLoginId(),
                 Role.USER
         );
+// Refresh Token 생성
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getLoginId());
 
-        return new LoginRes(accessToken);
+        // Refresh Token 업데이트
+        user.updateRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        return new LoginRes(accessToken, refreshToken);
     }
+
+    @Override
+    @Transactional
+    public LoginRes refreshAccessToken(String refreshTokenValue) {
+        // Refresh Token 검증
+        if (!jwtTokenProvider.validateToken(refreshTokenValue)) {
+            throw new RefreshTokenExpiredException();
+        }
+
+        // Owner 리프래시 토큰 찾기
+        Owner owner = ownerRepository.findByRefreshToken(refreshTokenValue).orElse(null);
+        if (owner != null) {
+
+            String newAccessToken = jwtTokenProvider.generateAccessToken(
+                    owner.getId(),
+                    owner.getLoginId(),
+                    Role.OWNER
+            );
+
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(owner.getLoginId());
+
+            // 새로운 토큰으로 업데이트
+            owner.updateRefreshToken(newRefreshToken);
+            ownerRepository.save(owner);
+
+            return new LoginRes(newAccessToken, newRefreshToken);
+
+        }
+
+        User user = userRepository.findByRefreshToken(refreshTokenValue).orElse(null);
+        if (user != null) {
+
+            // 새로운 토큰 생성
+            String newAccessToken = jwtTokenProvider.generateAccessToken(
+                    user.getId(),
+                    user.getLoginId(),
+                    Role.USER
+            );
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getLoginId());
+
+            // 새로운 토큰으로 업데이트
+            user.updateRefreshToken(newRefreshToken);
+            userRepository.save(user);
+
+            return new LoginRes(newAccessToken, newRefreshToken);
+        }
+        throw new RefreshTokenNotFoundException();
+
+    }
+
+    @Override
+    public void logout(String loginId) {
+        Owner owner = ownerRepository.findByLoginId(loginId).orElse(null);
+        if (owner != null) {
+            owner.deleteRefreshToken();
+            ownerRepository.save(owner);
+            return;
+        }
+        User user = userRepository.findByLoginId(loginId).orElse(null);
+        if (user != null) {
+            user.deleteRefreshToken();
+            userRepository.save(user);
+            return;
+        }
+        throw new UserNotFoundException();
+    }
+
+
 }
 
 

@@ -11,4 +11,6 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     boolean existsByLoginId(String loginId);
     // 사장님 로그인 ID로 조회 기능 추가
     Optional<Owner> findByLoginId(String LoginId);
+    // 토큰 조회
+    Optional<Owner> findByRefreshToken(String refreshToken);
 }

@@ -6,6 +6,8 @@ import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -31,6 +33,9 @@ public class Owner extends BaseEntity {
     @Column(name = "billing_key")
     private String billingKey;
 
+    @Column(name = "refresh_token" , length = 500)
+    private String refreshToken;
+
     @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
     private Store store;
 
@@ -45,6 +50,16 @@ public class Owner extends BaseEntity {
     // 카드 등록 여부 확인 메서드
     public boolean hasRegisteredCard() {
         return this.billingKey != null;
+    }
+
+    // Refresh Token 업데이트 메서드
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    // Refresh Token 삭제
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
     }
 
 
