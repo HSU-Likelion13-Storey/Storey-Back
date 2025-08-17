@@ -49,4 +49,10 @@ public class Subscription extends BaseEntity {
         this.endDate = this.endDate.plusMonths(1);
         this.status = SubscriptionStatus.ACTIVE;
     }
+    // 무료 체험 시작 메소드
+    public void startTrial() {
+        this.status= SubscriptionStatus.ACTIVE;
+        this.startDate = LocalDateTime.now();
+        this.endDate = LocalDateTime.now().plusMonths(1);
+    }
 }
