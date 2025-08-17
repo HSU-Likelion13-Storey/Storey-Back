@@ -41,7 +41,7 @@ public class StoreController {
     }
     
     // 특정 가게 상세 정보 조회
-    @GetMapping("/store/{storeId}")
+    @GetMapping("/stores/{storeId}")
     public ResponseEntity<SuccessResponse<?>> getStoreDetail(@PathVariable Long storeId) {
         StoreDetailRes storeDetailRes = storeService.findStoreDetail(storeId);
         return ResponseEntity.status(HttpStatus.OK)
