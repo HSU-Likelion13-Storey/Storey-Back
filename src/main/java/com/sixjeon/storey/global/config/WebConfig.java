@@ -11,13 +11,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-//                .allowedOrigins("https://storey-6jeon.vercel.app",
-//                        "http://localhost:5173")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "주소 명시OPTIONS")
+                 .allowedOrigins("https://storey-6jeon.vercel.app",
+                              "http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowCredentials(true);
+                .allowCredentials(false);
 
     }
     // 외부 API 호출을 위한 WebClient Bean
