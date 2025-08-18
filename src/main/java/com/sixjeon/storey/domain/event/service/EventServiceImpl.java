@@ -27,15 +27,37 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public SaveEventRes findStoreEvent(String OwnerLoginId) {
+//        Store store = findStoreByOwnerLoginId(OwnerLoginId);
+//
+//
+//        return eventRepository.findByStoreId(store.getId())
+//                .map(event -> SaveEventRes.builder()
+//                        .eventId(event.getId())
+//                        .content(event.getContent())
+//                        .build())
+//                .orElse(null);
+        System.out.println("=== 이벤트 조회 시작 ===");
+        System.out.println("ownerLoginId: " + OwnerLoginId);
+
         Store store = findStoreByOwnerLoginId(OwnerLoginId);
-        Event event = eventRepository.findByStoreId(store.getId())
-                .orElseThrow(EventNotFoundException::new);
+        System.out.println("Store ID: " + store.getId());
 
-        return SaveEventRes.builder()
-                .eventId(event.getId())
-                .content(event.getContent())
-                .build();
+        SaveEventRes result = eventRepository.findByStoreId(store.getId())
+                .map(event -> {
+                    System.out.println("이벤트 발견! Event ID: " + event.getId() + ", Content: " + event.getContent());
+                    return SaveEventRes.builder()
+                            .eventId(event.getId())
+                            .content(event.getContent())
+                            .build();
+                })
+                .orElse(null);
 
+        if (result == null) {
+            System.out.println("조회된 이벤트가 없습니다.");
+        }
+
+        System.out.println("=== 이벤트 조회 종료 ===");
+        return result;
     }
     // 가게 이벤트 생성 및 수정
     @Override
@@ -66,14 +88,30 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void deleteEvent(String ownerLoginId) {
+//        // 로그인한 사장님의 가게 정보를 조회
+//        Store store = findStoreByOwnerLoginId(ownerLoginId);
+//        // 가게 ID로 삭제할 이벤트 조회
+//        eventRepository.findByStoreId(store.getId())
+//                .ifPresent(event -> eventRepository.delete(event));
+        System.out.println("=== 이벤트 삭제 시작 ===");
+        System.out.println("ownerLoginId: " + ownerLoginId);
+
         // 로그인한 사장님의 가게 정보를 조회
         Store store = findStoreByOwnerLoginId(ownerLoginId);
+        System.out.println("Store ID: " + store.getId());
+
         // 가게 ID로 삭제할 이벤트 조회
-        Event event = eventRepository.findByStoreId(store.getId())
-                .orElseThrow(EventNotFoundException::new);
-        // 이벤트 삭제
-        eventRepository.delete(event);
-        
+        eventRepository.findByStoreId(store.getId())
+                .ifPresentOrElse(
+                        event -> {
+                            System.out.println("이벤트 발견! Event ID: " + event.getId());
+                            eventRepository.delete(event);
+                            System.out.println("이벤트 삭제 완료!");
+                        },
+                        () -> System.out.println("삭제할 이벤트가 없습니다.")
+                );
+
+        System.out.println("=== 이벤트 삭제 종료 ===");
     }
 
     private Store findStoreByOwnerLoginId(String ownerLoginId) {

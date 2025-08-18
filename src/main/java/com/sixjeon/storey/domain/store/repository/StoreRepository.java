@@ -22,7 +22,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     * Store와 Event를 Left Join함
     * */
     @Query("SELECT new com.sixjeon.storey.domain.store.web.dto.MapStoreRes(s.id, s.storeName, s.addressMain, s.latitude, s.longitude, e.content) " +
-            "FROM Store s LEFT JOIN s.event e")
+            "FROM Store s LEFT JOIN Event e ON s.id = e.store.id")
     List<MapStoreRes> findAllWithEvent();
 
 

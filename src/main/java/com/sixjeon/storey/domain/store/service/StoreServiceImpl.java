@@ -1,6 +1,7 @@
 package com.sixjeon.storey.domain.store.service;
 
 import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
+import com.sixjeon.storey.domain.event.repository.EventRepository;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
 import com.sixjeon.storey.domain.proprietor.service.ProprietorService;
@@ -28,6 +29,7 @@ public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
     private final OwnerRepository ownerRepository;
     private final ProprietorService proprietorService;
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
@@ -83,7 +85,9 @@ public class StoreServiceImpl implements StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(NotFoundStoreException::new);
 
-        String eventContent = store.getEvent() != null ? store.getEvent().getContent() : null;
+        String eventContent = eventRepository.findByStoreId(storeId)
+                .map(event -> event.getContent())
+                .orElse(null);
 
         return StoreDetailRes.builder()
                 .storeId(store.getId())

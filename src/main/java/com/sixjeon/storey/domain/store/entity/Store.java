@@ -50,8 +50,8 @@ public class Store extends BaseEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
-    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY)
-    private Event event;
+//    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY)
+//    private Event event;
 
 
 
