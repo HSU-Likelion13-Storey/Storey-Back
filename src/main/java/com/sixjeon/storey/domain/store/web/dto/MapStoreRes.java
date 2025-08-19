@@ -1,5 +1,6 @@
 package com.sixjeon.storey.domain.store.web.dto;
 
+import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import lombok.Builder;
 
 @Builder
@@ -10,6 +11,7 @@ public record MapStoreRes(
         String addressMain,
         Double latitude,
         Double longitude,
-        String eventContent
+        String eventContent,
+        SubscriptionStatus subscriptionStatus
 ) {
 }
