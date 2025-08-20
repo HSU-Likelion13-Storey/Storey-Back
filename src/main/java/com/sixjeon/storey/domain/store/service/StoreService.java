@@ -16,5 +16,9 @@ public interface StoreService {
     List<MapStoreRes> findAllStoresForUserMap(String userLoginId);
     // 가게 상세 조회
     StoreDetailRes findStoreDetailForUser(Long storeId, String userLoginId);
+    // qr 코드 조회
+    String getStoreQrCode(String ownerLoginId);
+    // qr 코드로 해금
+    void unlockStoreByQr(String qrCode, String userLoginId);
 
 }

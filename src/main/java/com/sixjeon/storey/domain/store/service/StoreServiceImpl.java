@@ -11,10 +11,7 @@ import com.sixjeon.storey.domain.proprietor.service.ProprietorService;
 import com.sixjeon.storey.domain.proprietor.web.dto.CheckProprietorReq;
 import com.sixjeon.storey.domain.proprietor.web.dto.CheckProprietorRes;
 import com.sixjeon.storey.domain.store.entity.Store;
-import com.sixjeon.storey.domain.store.exception.AlreadyRegisterStoreException;
-import com.sixjeon.storey.domain.store.exception.DuplicateBusinessNumberException;
-import com.sixjeon.storey.domain.store.exception.InvalidBusinessNumberException;
-import com.sixjeon.storey.domain.store.exception.NotFoundStoreException;
+import com.sixjeon.storey.domain.store.exception.*;
 import com.sixjeon.storey.domain.store.repository.StoreRepository;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
@@ -134,6 +131,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
+    @Transactional
     public StoreDetailRes findStoreDetailForUser(Long storeId, String userLoginId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(NotFoundStoreException::new);
@@ -149,6 +147,48 @@ public class StoreServiceImpl implements StoreService {
                 .detailAddress(store.getAddressDetail())
                 .eventContent(eventContent)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public String getStoreQrCode(String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+        Store store = storeRepository.findByOwner(owner)
+                .orElseThrow(NotFoundStoreException::new);
+        // qr이 없을 경우 생성하는 로직 -> 근데 가게 등록 때 생성 로직 있음
+        if (store.getQrCode() == null || store.getQrCode().trim().isEmpty()) {
+            store.generateQrCode();
+            storeRepository.save(store);
+        }
+        return store.getQrCode();
+    }
+
+    @Override
+    @Transactional
+    public void unlockStoreByQr(String qrCode, String userLoginId) {
+        User user = userRepository.findByLoginId(userLoginId)
+                .orElseThrow(UserNotFoundException::new);
+
+        Store store = storeRepository.findByQrCode(qrCode)
+                .orElseThrow(InvalidQrCodeException::new);
+
+        // 구독 상태 확인 -> 사장님이 구독을 하지 않았다면 예외 발생
+        SubscriptionStatus subscriptionStatus = subscriptionRepository.findByOwnerId(store.getOwner().getId())
+                .map(Subscription::getStatus)
+                .orElse(SubscriptionStatus.EXPIRED);
+        // 구독하지 않은 가게 예외
+        if (subscriptionStatus != SubscriptionStatus.ACTIVE && subscriptionStatus != SubscriptionStatus.CANCELED_REQUESTED) {
+            throw new NotSubscribedException();
+        }
+        // 이미 해금된 가게 예외
+        if (user.isStoreUnlocked(store.getId())){
+            throw new StoreAlreadyUnlockedException();
+        }
+
+        user.addUnlockedStoreId(store.getId());
+        userRepository.save(user);
+
     }
 
 }
