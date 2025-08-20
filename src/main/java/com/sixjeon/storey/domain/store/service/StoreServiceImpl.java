@@ -134,6 +134,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
+    @Transactional
     public StoreDetailRes findStoreDetailForUser(Long storeId, String userLoginId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(NotFoundStoreException::new);
@@ -149,6 +150,20 @@ public class StoreServiceImpl implements StoreService {
                 .detailAddress(store.getAddressDetail())
                 .eventContent(eventContent)
                 .build();
+    }
+
+    @Override
+    public String getStoreQrCode(String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+        Store store = storeRepository.findByOwner(owner)
+                .orElseThrow(NotFoundStoreException::new);
+        // qr이 없을 경우 생성하는 로직 -> 근데 가게 등록 때 생성 로직 있음
+        if (store.getQrCode() == null || store.getQrCode().trim().isEmpty()) {
+            store.generateQrCode();
+            storeRepository.save(store);
+        }
+        return store.getQrCode();
     }
 
 }

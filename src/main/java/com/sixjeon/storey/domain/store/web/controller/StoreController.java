@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
 @RequiredArgsConstructor
 public class StoreController {
 
@@ -36,15 +35,15 @@ public class StoreController {
     }
 
     // 지도에서 모든 가게 조회
-    @GetMapping("/stores/map")
+    @GetMapping("/user/stores/map")
     public ResponseEntity<SuccessResponse<?>> getStoresForMap(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<MapStoreRes> mapStoreRes = storeService.findAllStoresForUserMap(customUserDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok(mapStoreRes));
     }
-
-    @GetMapping("/stores/{storeId}")
+    // 지도에서 가게 상세조회
+    @GetMapping("/user/stores/{storeId}")
     public ResponseEntity<SuccessResponse<?>> getStoreDetail(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         StoreDetailRes storeDetailRes = storeService.findStoreDetailForUser(storeId, customUserDetails.getUsername());
 
@@ -52,6 +51,13 @@ public class StoreController {
                 .body(SuccessResponse.ok(storeDetailRes));
     }
 
+    @GetMapping("/ower/store/qr")
+    public ResponseEntity<SuccessResponse<?>> getStoreQr(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        String qrCode = storeService.getStoreQrCode(customUserDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok(qrCode));
+    }
 
 
 
