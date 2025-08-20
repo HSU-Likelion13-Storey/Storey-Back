@@ -1,7 +1,7 @@
 package com.sixjeon.storey.domain.interview.web.controller;
 
 import com.sixjeon.storey.domain.interview.service.InterviewService;
-import com.sixjeon.storey.domain.interview.web.dto.CharacterRes;
+import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
 import com.sixjeon.storey.domain.interview.web.dto.CreateQuestionReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewRes;
@@ -37,15 +37,6 @@ public class InterviewController {
                 .body(SuccessResponse.ok(interviewRes));
     }
 
-    // 캐릭터 생성 & 인터뷰 한줄 요약
-    @PostMapping("/character")
-    public ResponseEntity<SuccessResponse<?>> character(@RequestBody @Valid InterviewReq interviewReq) {
-        CharacterRes characterRes = interviewService.generateCharacter(interviewReq);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(SuccessResponse.ok(characterRes));
-    }
 
     // 이전에 진행했던 인터뷰 조회
     /**@GetMapping("interview/check")
