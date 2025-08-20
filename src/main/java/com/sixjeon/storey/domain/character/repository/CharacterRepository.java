@@ -1,6 +1,6 @@
 package com.sixjeon.storey.domain.character.repository;
 
-import com.sixjeon.storey.domain.character.domain.Character;
+import com.sixjeon.storey.domain.character.entity.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
 package com.sixjeon.storey.domain.character.service;
 
 import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
-import com.sixjeon.storey.domain.character.domain.Character;
+import com.sixjeon.storey.domain.character.entity.Character;
 import com.sixjeon.storey.domain.character.repository.CharacterRepository;
 import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
 import com.sixjeon.storey.domain.interview.util.AiGateWay;
