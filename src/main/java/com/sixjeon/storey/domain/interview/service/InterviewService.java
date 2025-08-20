@@ -2,7 +2,7 @@ package com.sixjeon.storey.domain.interview.service;
 
 import com.sixjeon.storey.domain.interview.util.AiGateWay;
 import com.sixjeon.storey.domain.interview.util.S3Uploader;
-import com.sixjeon.storey.domain.interview.web.dto.CharacterRes;
+import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
 import com.sixjeon.storey.domain.interview.web.dto.CreateQuestionReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewRes;
@@ -29,15 +29,5 @@ public class InterviewService {
         return new InterviewRes(next);
     }
 
-    // 캐릭터 생성 (요약 + 이미지 → S3)
-    public CharacterRes generateCharacter(@Valid InterviewReq interviewReq) {
-        String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
-        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
-        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
-        String key = "characters/%s.png".formatted(java.util.UUID.randomUUID());
-        String url = s3Uploader.uploadPngAndGetUrl(png, key);
-
-        return new CharacterRes(url, oneLine); // CharacterRes 구조에 맞게 생성자/빌더 사용
-    }
 }

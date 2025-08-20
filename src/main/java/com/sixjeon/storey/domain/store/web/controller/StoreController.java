@@ -1,5 +1,7 @@
 package com.sixjeon.storey.domain.store.web.controller;
 
+import com.sixjeon.storey.domain.store.entity.Store;
+import com.sixjeon.storey.domain.store.repository.StoreRepository;
 import com.sixjeon.storey.domain.store.service.StoreService;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
@@ -17,11 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class StoreController {
 
     private final StoreService storeService;
+    private final StoreRepository storeRepository;
 
     @PostMapping("/owner/store")
     public ResponseEntity<SuccessResponse<?>> registerStore(
@@ -34,19 +37,21 @@ public class StoreController {
 
     // 지도에서 모든 가게 조회
     @GetMapping("/stores/map")
-    public ResponseEntity<SuccessResponse<?>> getStoresForMap() {
-        List<MapStoreRes> mapStoreRes = storeService.findAllStoresForMap();
+    public ResponseEntity<SuccessResponse<?>> getStoresForMap(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<MapStoreRes> mapStoreRes = storeService.findAllStoresForUserMap(customUserDetails.getUsername());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok(mapStoreRes));
     }
-    
-    // 특정 가게 상세 정보 조회
+
     @GetMapping("/stores/{storeId}")
-    public ResponseEntity<SuccessResponse<?>> getStoreDetail(@PathVariable Long storeId) {
-        StoreDetailRes storeDetailRes = storeService.findStoreDetail(storeId);
+    public ResponseEntity<SuccessResponse<?>> getStoreDetail(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        StoreDetailRes storeDetailRes = storeService.findStoreDetailForUser(storeId, customUserDetails.getUsername());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.ok(storeDetailRes));
     }
+
 
 
 

@@ -10,6 +10,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Store extends BaseEntity {
@@ -45,13 +46,18 @@ public class Store extends BaseEntity {
 
     private Double longitude;
 
+    @Column(name = "qr_code", unique = true)
+    private String qrCode;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
-//    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY)
-//    private Event event;
+    // QR 코드 생성 메소드
+    public void generateQrCode() {
+        this.qrCode = "STORE_" + this.id + "_" + java.util.UUID.randomUUID();
+    }
+
 
 
 

@@ -129,6 +129,23 @@ public class OpenAiGateWay implements AiGateWay {
         return text;
     }
 
+    @Override
+    public String generateCharacterName(String oneLineSummary) {
+        String prompt = buildCharacterNamePrompt(oneLineSummary);
+        String raw = chat(prompt);
+        return raw == null || raw.isBlank() ? "스토리" : raw.trim();
+    }
+
+
+
+
+    @Override
+    public String generateCharacterDescription(String oneLineSummary) {
+        String prompt = buildCharacterDescriptionPrompt(oneLineSummary);
+        String raw = chat(prompt);
+        return raw == null || raw.isBlank() ? "이 친구는 따듯한 마음을 가진 다정한 친구" : raw.trim();
+    }
+
     private String chat(String userPrompt) {
         WebClient wc = webClient;
 
@@ -198,12 +215,50 @@ public class OpenAiGateWay implements AiGateWay {
         return String.format("""
             Create a mascot character illustration for a small business.
             Business concept (Korean): "%s".
-
+            
             [Style]
             - friendly, cute, high-contrast
             - full body, front view
             - white or transparent background
             - poster/branding ready
+            """, summary);
+    }
+
+    private String buildCharacterDescriptionPrompt(String summary) {
+        return String.format("""
+                당신은 브랜드 캐릭터 설명을 작성하는 전문가입니다.
+                아래 핵심 메시지를 바탕으로, 캐릭터의 성격과 특징을 표현하는 설명을 작성해주세요.
+                
+                작성 형식:
+                - (캐릭터 이름)은/는 [성격이나 특징]한 캐릭터에요.
+                - '[핵심 메시지와 관련된 좌우명이나 말버릇]' 이 좌우명이랍니다.
+                - 총 50자 내외로 작성
+                - 친근하고 따듯한 톤으로 작성
+                
+                예시:
+                하루치는 따듯하고 말이 느린 아이에요.
+                '버거는 패스트푸드가 아니다 정성이 담긴 슬로우푸드다'가 좌우명이랍니다.
+                
+            
+                [핵심 메시지]
+                %s
+             
+                """, summary);
+    }
+
+    private String buildCharacterNamePrompt(String summary) {
+        return String.format("""
+            당신은 사랑스러운 캐릭터 네이밍 전문가입니다.
+            아래의 핵심 메시지를 바탕으로, 가게의 마스코트로 사용할 캐릭터의 이름을 지어주세요.
+            
+            [이름 생성 규칙]
+            - 반드시 1~3단어 사이의 짧은 한글 이름이어야 합니다.
+            - 귀엽고 부르기 쉬운 이름이어야 합니다.
+            - '카페', '가게', '스토어' 같은 단어는 절대 포함하면 안 됩니다.
+            - 이름만 간결하게 출력하고, 따음표나 다른 설명은 덧붙이지 마세요.
+            
+            [핵심 메시지]
+            %s
             """, summary);
     }
 }
