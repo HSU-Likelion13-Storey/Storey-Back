@@ -18,4 +18,10 @@ public interface AiGateWay {
 
     // 문자열 정제
     String sanitizeQuestion(String content);
+
+    // 캐릭터 이름 만들기
+    String generateCharacterName(String oneLineSummary);
+    
+    // 캐릭터 설명 생성
+    String generateCharacterDescription(String oneLineSummary);
 }
