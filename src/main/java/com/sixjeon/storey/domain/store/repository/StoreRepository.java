@@ -17,13 +17,10 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     boolean existsByOwner(Owner owner);
     // Owner로 가게 조회
     Optional<Store> findByOwner(Owner owner);
-    /*
-    * 지도에 표시할 모든 가게 정보를 조회하는 쿼리
-    * Store와 Event를 Left Join함
-    * */
-    @Query("SELECT new com.sixjeon.storey.domain.store.web.dto.MapStoreRes(s.id, s.storeName, s.addressMain, s.latitude, s.longitude, e.content) " +
-            "FROM Store s LEFT JOIN Event e ON s.id = e.store.id")
-    List<MapStoreRes> findAllWithEvent();
+    // QR 코드 문자열로 가게를 찾아서 반환
+    Optional<Store> findByQrCode(String qrCode);
+    // QR 코드가 DB에 존재하는지 true/false -> 중복 체크용
+    boolean existsByQrCode(String qrCode);
 
 
 
