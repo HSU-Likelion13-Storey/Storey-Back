@@ -10,9 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +38,7 @@ public class InterviewController {
     }
 
     // 캐릭터 생성 & 인터뷰 한줄 요약
-    /**@PostMapping("/character")
+    @PostMapping("/character")
     public ResponseEntity<SuccessResponse<?>> character(@RequestBody @Valid InterviewReq interviewReq) {
         CharacterRes characterRes = interviewService.generateCharacter(interviewReq);
 
@@ -48,5 +46,11 @@ public class InterviewController {
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.ok(characterRes));
     }
-    **/
+
+    // 이전에 진행했던 인터뷰 조회
+    /**@GetMapping("interview/check")
+    public ResponseEntity<SuccessResponse<?>> checkInterview(@RequestParam Long interviewId) {
+
+    }**/
+
 }

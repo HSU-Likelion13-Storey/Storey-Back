@@ -48,8 +48,10 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
-	// AWS S3 연동을 위한 의존성 추가
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1'
+    // S3
+    implementation platform("software.amazon.awssdk:bom:2.25.61")
+    implementation "software.amazon.awssdk:s3"
+    implementation "software.amazon.awssdk:s3-transfer-manager"
 }
 
 tasks.named('test') {
