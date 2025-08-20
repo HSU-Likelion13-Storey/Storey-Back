@@ -1,7 +1,7 @@
 package com.sixjeon.storey.domain.store.service;
 
-import com.sixjeon.storey.domain.auth.exception.DuplicatePhoneNumberException;
 import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
+import com.sixjeon.storey.domain.event.repository.EventRepository;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
 import com.sixjeon.storey.domain.proprietor.service.ProprietorService;
@@ -11,11 +11,16 @@ import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.domain.store.exception.AlreadyRegisterStoreException;
 import com.sixjeon.storey.domain.store.exception.DuplicateBusinessNumberException;
 import com.sixjeon.storey.domain.store.exception.InvalidBusinessNumberException;
+import com.sixjeon.storey.domain.store.exception.NotFoundStoreException;
 import com.sixjeon.storey.domain.store.repository.StoreRepository;
+import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
+import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
     private final OwnerRepository ownerRepository;
     private final ProprietorService proprietorService;
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
@@ -61,11 +67,35 @@ public class StoreServiceImpl implements StoreService {
                 .addressMain(registerStoreReq.getAddressMain())
                 .addressDetail(registerStoreReq.getAddressDetail())
                 .postalCode(registerStoreReq.getPostalCode())
-                .inActive(false)
                 .build();
         // DB에 저장
         storeRepository.save(store);
 
+    }
+
+    @Override
+    @Transactional
+    public List<MapStoreRes> findAllStoresForMap() {
+        return storeRepository.findAllWithEvent();
+    }
+
+    @Override
+    @Transactional
+    public StoreDetailRes findStoreDetail(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(NotFoundStoreException::new);
+
+        String eventContent = eventRepository.findByStoreId(storeId)
+                .map(event -> event.getContent())
+                .orElse(null);
+
+        return StoreDetailRes.builder()
+                .storeId(store.getId())
+                .storeName(store.getStoreName())
+                .addressMain(store.getAddressMain())
+                .detailAddress(store.getAddressDetail())
+                .eventContent(eventContent)
+                .build();
     }
 }
 
