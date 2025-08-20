@@ -14,9 +14,11 @@ import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.domain.store.exception.AlreadyRegisterStoreException;
 import com.sixjeon.storey.domain.store.exception.DuplicateBusinessNumberException;
 import com.sixjeon.storey.domain.store.exception.InvalidBusinessNumberException;
+import com.sixjeon.storey.domain.store.exception.NotFoundStoreException;
 import com.sixjeon.storey.domain.store.repository.StoreRepository;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
+import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
 import com.sixjeon.storey.domain.subscription.entity.Subscription;
 import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
@@ -129,6 +131,24 @@ public class StoreServiceImpl implements StoreService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public StoreDetailRes findStoreDetailForUser(Long storeId, String userLoginId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(NotFoundStoreException::new);
+
+        String eventContent = eventRepository.findByStoreId(storeId)
+                .map(Event::getContent)
+                .orElse(null);
+
+        return StoreDetailRes.builder()
+                .storeId(store.getId())
+                .storeName(store.getStoreName())
+                .addressMain(store.getAddressMain())
+                .detailAddress(store.getAddressDetail())
+                .eventContent(eventContent)
+                .build();
     }
 
 }
