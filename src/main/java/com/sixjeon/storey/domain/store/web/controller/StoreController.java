@@ -65,7 +65,7 @@ public class StoreController {
                                                           @Valid @RequestBody QrScanReq qrScanReq) {
         storeService.unlockStoreByQr(qrScanReq.getQrCode(), customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(SuccessResponse.ok("가게 해감이 성공적으로 완료되었습니다."));
+                .body(SuccessResponse.ok("가게 해금이 성공적으로 완료되었습니다."));
     }
 
 

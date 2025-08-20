@@ -1,4 +1,4 @@
-package com.sixjeon.storey.domain.user.web.dto;
+package com.sixjeon.storey.domain.collection.web.dto;
 
 import java.util.List;
 
