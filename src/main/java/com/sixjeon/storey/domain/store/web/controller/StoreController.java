@@ -44,6 +44,14 @@ public class StoreController {
                 .body(SuccessResponse.ok(mapStoreRes));
     }
 
+    @GetMapping("/stores/{storeId}")
+    public ResponseEntity<SuccessResponse<?>> getStoreDetail(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        StoreDetailRes storeDetailRes = storeService.findStoreDetailForUser(storeId, customUserDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.ok(storeDetailRes));
+    }
+
 
 
 

@@ -14,5 +14,7 @@ public interface StoreService {
     * 2. 해금 상태에 따라 자물쇠 캐릭터 구분
     * */
     List<MapStoreRes> findAllStoresForUserMap(String userLoginId);
+    // 가게 상세 조회
+    StoreDetailRes findStoreDetailForUser(Long storeId, String userLoginId);
 
 }
