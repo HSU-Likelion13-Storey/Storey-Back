@@ -1,8 +1,10 @@
 package com.sixjeon.storey.domain.user.service;
 
+import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
 import com.sixjeon.storey.domain.auth.web.dto.SignupReq;
 import com.sixjeon.storey.domain.user.entity.User;
 import com.sixjeon.storey.domain.user.repository.UserRepository;
+import com.sixjeon.storey.domain.user.web.dto.UserMyPageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,5 +27,16 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserMyPageRes getMyPage(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(UserNotFoundException::new);
+
+        return new UserMyPageRes(
+                user.getNickName(),
+                user.getLoginId()
+        );
     }
 }
