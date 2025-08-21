@@ -2,6 +2,7 @@ package com.sixjeon.storey.domain.store.service;
 
 import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
 import com.sixjeon.storey.domain.character.entity.Character;
+import com.sixjeon.storey.domain.character.exception.CharacterNotFoundException;
 import com.sixjeon.storey.domain.character.repository.CharacterRepository;
 import com.sixjeon.storey.domain.event.entity.Event;
 import com.sixjeon.storey.domain.event.repository.EventRepository;
@@ -16,6 +17,7 @@ import com.sixjeon.storey.domain.store.repository.StoreRepository;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
 import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
+import com.sixjeon.storey.domain.store.web.dto.StoreQrRes;
 import com.sixjeon.storey.domain.subscription.entity.Subscription;
 import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
@@ -153,7 +155,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     @Transactional
-    public String getStoreQrCode(String ownerLoginId) {
+    public StoreQrRes getStoreQrCode(String ownerLoginId) {
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
         Store store = storeRepository.findByOwner(owner)
@@ -163,7 +165,14 @@ public class StoreServiceImpl implements StoreService {
             store.generateQrCode();
             storeRepository.save(store);
         }
-        return store.getQrCode();
+
+        Character character = characterRepository.findByStoreId(store.getId())
+                .orElseThrow(CharacterNotFoundException::new);
+
+        return StoreQrRes.builder()
+                .qrCode(store.getQrCode())
+                .characterId(character != null ? character.getId() : null)
+                .build();
     }
 
     @Override

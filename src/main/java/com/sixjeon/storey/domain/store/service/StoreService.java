@@ -3,6 +3,7 @@ package com.sixjeon.storey.domain.store.service;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
 import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
+import com.sixjeon.storey.domain.store.web.dto.StoreQrRes;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface StoreService {
     // 가게 상세 조회
     StoreDetailRes findStoreDetailForUser(Long storeId, String userLoginId);
     // qr 코드 조회
-    String getStoreQrCode(String ownerLoginId);
+    StoreQrRes getStoreQrCode(String ownerLoginId);
     // qr 코드로 해금
     void unlockStoreByQr(String qrCode, String userLoginId);
 

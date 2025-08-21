@@ -6,6 +6,7 @@ import com.sixjeon.storey.domain.store.service.StoreService;
 import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import com.sixjeon.storey.domain.store.web.dto.RegisterStoreReq;
 import com.sixjeon.storey.domain.store.web.dto.StoreDetailRes;
+import com.sixjeon.storey.domain.store.web.dto.StoreQrRes;
 import com.sixjeon.storey.domain.user.web.dto.QrScanReq;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
@@ -54,10 +55,10 @@ public class StoreController {
 
     @GetMapping("/owner/store/qr")
     public ResponseEntity<SuccessResponse<?>> getStoreQr(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        String qrCode = storeService.getStoreQrCode(customUserDetails.getUsername());
+        StoreQrRes storeQrRes = storeService.getStoreQrCode(customUserDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(SuccessResponse.ok(qrCode));
+                .body(SuccessResponse.ok(storeQrRes));
     }
 
     @PostMapping("/user/stores/unlock")
