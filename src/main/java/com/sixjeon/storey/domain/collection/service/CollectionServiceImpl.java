@@ -44,6 +44,7 @@ public class CollectionServiceImpl implements CollectionService {
                             .orElse(null);
 
                     return CollectedCharacterRes.builder()
+                            .characterId(character != null ? character.getId() : null)
                             .storeId(store.getId())
                             .storeName(store.getStoreName())
                             .characterImageUrl(character != null ? character.getImageUrl() : null)
