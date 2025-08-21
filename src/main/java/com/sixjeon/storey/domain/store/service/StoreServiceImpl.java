@@ -52,6 +52,8 @@ public class StoreServiceImpl implements StoreService {
         if (storeRepository.existsByOwner(owner)) {
             throw new AlreadyRegisterStoreException();
         }
+        // 입력받은 사업자 번호에서 하이픈 제거
+        String sanitizeBusinessNumber = registerStoreReq.getBusinessNumber().replaceAll("-", "");
 
         // 사업자 번호(businessNumber) 중복 체크
         if (storeRepository.existsByBusinessNumber(registerStoreReq.getBusinessNumber())) {
