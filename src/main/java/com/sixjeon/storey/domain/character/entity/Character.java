@@ -3,14 +3,12 @@ package com.sixjeon.storey.domain.character.entity;
 import com.sixjeon.storey.domain.store.entity.Store;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
