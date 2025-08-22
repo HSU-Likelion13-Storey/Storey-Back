@@ -23,6 +23,8 @@ import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
 import com.sixjeon.storey.domain.user.entity.User;
 import com.sixjeon.storey.domain.user.repository.UserRepository;
+import com.sixjeon.storey.global.external.kakao.dto.DocumentDto;
+import com.sixjeon.storey.global.external.kakao.service.KakaoMapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +44,7 @@ public class StoreServiceImpl implements StoreService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final KakaoMapService kakaoMapService;
 
     @Override
     @Transactional
@@ -54,8 +57,6 @@ public class StoreServiceImpl implements StoreService {
         if (storeRepository.existsByOwner(owner)) {
             throw new AlreadyRegisterStoreException();
         }
-        // 입력받은 사업자 번호에서 하이픈 제거
-        String sanitizeBusinessNumber = registerStoreReq.getBusinessNumber().replaceAll("-", "");
 
         // 사업자 번호(businessNumber) 중복 체크
         if (storeRepository.existsByBusinessNumber(registerStoreReq.getBusinessNumber())) {
@@ -69,6 +70,9 @@ public class StoreServiceImpl implements StoreService {
             throw new InvalidBusinessNumberException();
         }
 
+        // 주소를 위도, 경도로 변환
+        DocumentDto coordinates  = kakaoMapService.getCoordinates(registerStoreReq.getAddressMain()).block();
+
 
         // 가게 등록
         Store store = Store.builder()
@@ -81,6 +85,8 @@ public class StoreServiceImpl implements StoreService {
                 .addressMain(registerStoreReq.getAddressMain())
                 .addressDetail(registerStoreReq.getAddressDetail())
                 .postalCode(registerStoreReq.getPostalCode())
+                .latitude(coordinates.getLatitude())
+                .longitude(coordinates.getLongitude())
                 .build();
         // DB에 저장
         storeRepository.save(store);
