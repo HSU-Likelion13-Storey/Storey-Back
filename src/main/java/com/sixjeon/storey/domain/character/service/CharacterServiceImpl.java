@@ -51,6 +51,19 @@ public class CharacterServiceImpl implements CharacterService {
         }
 
         String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
+
+        InterviewSession interviewSession = interviewSessionRepository.findByStoreIdOrderByCreatedAtDesc(store.getId())
+                .stream()
+                .findFirst()
+                .orElseGet(() -> {
+                    InterviewSession newSession = new InterviewSession();
+                    newSession.setStoreId(store.getId());
+                    return newSession;
+                });
+
+        interviewSession.setNarrativeSummary(oneLine);
+        interviewSessionRepository.save(interviewSession);
+
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine, name);
         String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
@@ -84,7 +97,6 @@ public class CharacterServiceImpl implements CharacterService {
         Store store = storeRepository.findByOwner(owner)
                 .orElseThrow(NotFoundStoreException::new);
 
-        // 기존 캐릭터 삭제
         Character character = characterRepository.findByStoreId(store.getId())
                 .orElseGet(() -> {
                     Character newCharacter = new Character();
@@ -94,6 +106,19 @@ public class CharacterServiceImpl implements CharacterService {
 
 
         String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
+
+        InterviewSession interviewSession = interviewSessionRepository.findByStoreIdOrderByCreatedAtDesc(store.getId())
+                .stream()
+                .findFirst()
+                .orElseGet(() -> {
+                    InterviewSession newSession = new InterviewSession();
+                    newSession.setStoreId(store.getId());
+                    return newSession;
+                });
+
+        interviewSession.setNarrativeSummary(oneLine);
+        interviewSessionRepository.save(interviewSession);
+
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine, name);
         String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
