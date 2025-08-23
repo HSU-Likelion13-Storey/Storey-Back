@@ -1,4 +1,8 @@
 package com.sixjeon.storey.domain.subscription.web.dto;
 
-public class SubscriptionRenewRes {
+public record SubscriptionRenewRes(
+        boolean isSuccess
+) {
+
+
 }
