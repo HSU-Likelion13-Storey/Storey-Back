@@ -140,8 +140,8 @@ public class OpenAiGateWay implements AiGateWay {
 
 
     @Override
-    public String generateCharacterDescription(String oneLineSummary) {
-        String prompt = buildCharacterDescriptionPrompt(oneLineSummary);
+    public String generateCharacterDescription(String oneLineSummary, String characterName) {
+        String prompt = buildCharacterDescriptionPrompt(oneLineSummary, characterName);
         String raw = chat(prompt);
         return raw == null || raw.isBlank() ? "이 친구는 따듯한 마음을 가진 다정한 친구" : raw.trim();
     }
@@ -231,13 +231,13 @@ public class OpenAiGateWay implements AiGateWay {
             """, summary);
     }
 
-    private String buildCharacterDescriptionPrompt(String summary) {
+    private String buildCharacterDescriptionPrompt(String summary, String characterName) {
         return String.format("""
                 당신은 브랜드 캐릭터 설명을 작성하는 전문가입니다.
-                아래 핵심 메시지를 바탕으로, 캐릭터의 성격과 특징을 표현하는 설명을 작성해주세요.
+                아래 핵심 메시지를 바탕으로, %s의 성격과 특징을 표현하는 설명을 작성해주세요.
                 
                 작성 형식:
-                - (캐릭터 이름)은/는 [성격이나 특징]한 캐릭터에요.
+                - %s은/는 [성격이나 특징]한 캐릭터에요.
                 - '[핵심 메시지와 관련된 좌우명이나 말버릇]' 이 좌우명이랍니다.
                 - 총 50자 내외로 작성
                 - 친근하고 따듯한 톤으로 작성
@@ -250,7 +250,7 @@ public class OpenAiGateWay implements AiGateWay {
                 [핵심 메시지]
                 %s
              
-                """, summary);
+                """, characterName, characterName, summary);
     }
 
     private String buildCharacterNamePrompt(String summary) {

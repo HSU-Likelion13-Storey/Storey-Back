@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class InterviewService {
 
     private final AiGateWay aiGateWay;
-    private final S3Uploader s3Uploader;
 
     // 첫 질문
     public InterviewRes startInterview(CreateQuestionReq req) {

@@ -52,7 +52,7 @@ public class CharacterServiceImpl implements CharacterService {
 
         String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
         String name = aiGateWay.generateCharacterName(oneLine);
-        String description = aiGateWay.generateCharacterDescription(oneLine);
+        String description = aiGateWay.generateCharacterDescription(oneLine, name);
         String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
         byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
@@ -72,7 +72,47 @@ public class CharacterServiceImpl implements CharacterService {
 
         characterRepository.save(character);
 
-        return new CharacterRes(url, tagline, name , description, oneLine); // CharacterRes 구조에 맞게 생성자/빌더 사용
+        return new CharacterRes(url, tagline, name , description, oneLine);
+    }
+
+    @Override
+    @Transactional
+    public CharacterRes regenerateCharacter(InterviewReq interviewReq, String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+
+        Store store = storeRepository.findByOwner(owner)
+                .orElseThrow(NotFoundStoreException::new);
+
+        // 기존 캐릭터 삭제
+        Character character = characterRepository.findByStoreId(store.getId())
+                .orElseGet(() -> {
+                    Character newCharacter = new Character();
+                    newCharacter.setStore(store);
+                    return newCharacter;
+                });
+
+
+        String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
+        String name = aiGateWay.generateCharacterName(oneLine);
+        String description = aiGateWay.generateCharacterDescription(oneLine, name);
+        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
+        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
+
+
+        String key = "characters/%s.png".formatted(java.util.UUID.randomUUID());
+        String url = s3Uploader.uploadPngAndGetUrl(png, key);
+        String tagline = aiGateWay.generateCharacterTagline(oneLine);
+
+        character.setName(name);
+        character.setImageUrl(url);
+        character.setTagline(tagline);
+        character.setDescription(description);
+        //characterToUpdate.setNarrativeSummary(oneLine);
+
+
+        return new CharacterRes(url, tagline, name , description, oneLine);
+
     }
 
     @Override
