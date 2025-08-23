@@ -32,6 +32,16 @@ public class CharacterController {
                 .body(SuccessResponse.ok(characterRes));
     }
 
+    @PutMapping("/owner/character")
+    public ResponseEntity<SuccessResponse<?>> regenerateCharacter(@RequestBody @Valid InterviewReq interviewReq,
+                                                                  @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        CharacterRes characterRes = characterService.regenerateCharacter(interviewReq, customUserDetails.getUsername());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.ok(characterRes));
+    }
+
     @GetMapping("/characters/{characterId}")
     public ResponseEntity<SuccessResponse<?>> characterDetail(@PathVariable Long characterId) {
         CharacterDetailRes characterRes = characterService.getCharacterDetail(characterId);

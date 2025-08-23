@@ -72,7 +72,48 @@ public class CharacterServiceImpl implements CharacterService {
 
         characterRepository.save(character);
 
-        return new CharacterRes(url, tagline, name , description, oneLine); // CharacterRes 구조에 맞게 생성자/빌더 사용
+        return new CharacterRes(url, tagline, name , description, oneLine);
+    }
+
+    @Override
+    @Transactional
+    public CharacterRes regenerateCharacter(InterviewReq interviewReq, String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+
+        Store store = storeRepository.findByOwner(owner)
+                .orElseThrow(NotFoundStoreException::new);
+
+        // 기존 캐릭터 삭제
+        Character existingCharacter = characterRepository.findByStoreId(store.getId())
+                .orElseThrow(CharacterNotFoundException::new);
+
+        characterRepository.delete(existingCharacter);
+
+        String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
+        String name = aiGateWay.generateCharacterName(oneLine);
+        String description = aiGateWay.generateCharacterDescription(oneLine);
+        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
+        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
+
+
+        String key = "characters/%s.png".formatted(java.util.UUID.randomUUID());
+        String url = s3Uploader.uploadPngAndGetUrl(png, key);
+        String tagline = aiGateWay.generateCharacterTagline(oneLine);
+
+        Character character = Character.builder()
+                .name(name)
+                .imageUrl(url)
+                .tagline(tagline)
+                .description(description)
+                //             .narrativeSummary(oneLine)
+                .store(store)
+                .build();
+
+        characterRepository.save(character);
+
+        return new CharacterRes(url, tagline, name , description, oneLine);
+
     }
 
     @Override
