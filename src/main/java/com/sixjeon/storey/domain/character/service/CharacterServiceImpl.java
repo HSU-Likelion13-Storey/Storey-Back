@@ -2,6 +2,7 @@ package com.sixjeon.storey.domain.character.service;
 
 import com.sixjeon.storey.domain.auth.exception.UserNotFoundException;
 import com.sixjeon.storey.domain.character.entity.Character;
+import com.sixjeon.storey.domain.character.exception.AlreadyRegisterCharacterException;
 import com.sixjeon.storey.domain.character.exception.CharacterNotFoundException;
 import com.sixjeon.storey.domain.character.repository.CharacterRepository;
 import com.sixjeon.storey.domain.character.web.dto.CharacterDetailRes;
@@ -45,6 +46,10 @@ public class CharacterServiceImpl implements CharacterService {
         Store store = storeRepository.findByOwner(owner)
                 .orElseThrow(NotFoundStoreException::new);
 
+        if (characterRepository.existsByStoreId(store.getId())) {
+            throw new AlreadyRegisterCharacterException();
+        }
+
         String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine);
@@ -54,11 +59,12 @@ public class CharacterServiceImpl implements CharacterService {
 
         String key = "characters/%s.png".formatted(java.util.UUID.randomUUID());
         String url = s3Uploader.uploadPngAndGetUrl(png, key);
+        String tagline = aiGateWay.generateCharacterTagline(oneLine);
 
         Character character = Character.builder()
                 .name(name)
                 .imageUrl(url)
-                .tagline(null)
+                .tagline(tagline)
                 .description(description)
    //             .narrativeSummary(oneLine)
                 .store(store)
@@ -66,7 +72,7 @@ public class CharacterServiceImpl implements CharacterService {
 
         characterRepository.save(character);
 
-        return new CharacterRes(url, null, name , description, oneLine); // CharacterRes 구조에 맞게 생성자/빌더 사용
+        return new CharacterRes(url, tagline, name , description, oneLine); // CharacterRes 구조에 맞게 생성자/빌더 사용
     }
 
     @Override
