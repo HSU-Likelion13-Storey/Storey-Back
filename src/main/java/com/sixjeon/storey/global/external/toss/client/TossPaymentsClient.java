@@ -86,4 +86,32 @@ public class TossPaymentsClient {
         }
     }
 
+    public Map<String, Object > confirmPayment(String paymentKey, String orderId, Long amount){
+        String encodeKey = Base64.getEncoder().encodeToString((this.secretKey + ":").getBytes());
+
+        try {
+            Map<String, Object> response = webClient.post()
+                    .uri("v1/payments/confirm")
+                    .header("Authorization", "Basic " + encodeKey)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(Map.of(
+                            "paymentKey", paymentKey,
+                            "orderId", orderId,
+                            "amount", amount
+                    ))
+                    .retrieve()
+                    .onStatus(status -> status.isError(),
+                            response2 -> response2.bodyToMono(String.class)
+                                    .flatMap(body ->
+                                        Mono.error(new PaymentFailedException())
+                                    ))
+                    .bodyToMono(Map.class)
+                    .block();
+
+            return response;
+        } catch (Exception e) {
+            throw new PaymentFailedException();
+        }
+    }
+
 }

@@ -58,8 +58,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional
-    public void reactivateSubscription(SubscriptionRenewReq subscriptionRenewReq, String ownerLoginId) {
-
+    public boolean reactivateSubscription(SubscriptionRenewReq subscriptionRenewReq, String ownerLoginId) {
+        try{
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -67,30 +67,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
                 .orElseThrow(SubscriptionNotFoundException::new);
 
-        if (!owner.hasRegisteredCard()) {
-            throw new PaymentFailedException();
-        }
-
-        // orderId가 비어있으면 자동 생성
-        String orderId = subscriptionRenewReq.getOrderId();
-        if (orderId == null || orderId.trim().isEmpty()) {
-            orderId = "subscription_renew_" + owner.getId() + "_" + System.currentTimeMillis();
-        }
-
-        // 토스페이먼츠에 결제 승인 API 호출
-        Map<String, Object> tossResponse = tossPaymentsClient.requestBillingPayment(
-                owner.getBillingKey(),
-                PLAN_PRICE,
-                orderId,
-                PLAN_NAME);
+        // 바로 결제 승인 진행
+        Map<String, Object> tossResponse = tossPaymentsClient.confirmPayment(
+                subscriptionRenewReq.getPaymentKey(),
+                subscriptionRenewReq.getOrderId(),
+                subscriptionRenewReq.getAmount()
+        );
 
         String status = (String) tossResponse.get("status");
 
-        if (!"DONE".equals(status)) {
-            throw new PaymentFailedException();
+        if ("DONE".equals(status)) {
+            subscription.renew();
+            return true;
+        } else {
+            return false;
         }
 
-        subscription.renew();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // 구독 상태 조회
