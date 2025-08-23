@@ -1,6 +1,6 @@
 package com.sixjeon.storey.global.security.details;
 
-import com.sixjeon.storey.domain.auth.entity.Role;
+import com.sixjeon.storey.domain.auth.entity.enums.Role;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;

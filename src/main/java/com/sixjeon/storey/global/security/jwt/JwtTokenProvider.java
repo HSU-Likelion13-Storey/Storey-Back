@@ -1,6 +1,6 @@
 package com.sixjeon.storey.global.security.jwt;
 
-import com.sixjeon.storey.domain.auth.entity.Role;
+import com.sixjeon.storey.domain.auth.entity.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Slf4j

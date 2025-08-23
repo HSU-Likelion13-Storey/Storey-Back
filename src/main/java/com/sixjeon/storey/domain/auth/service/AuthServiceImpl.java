@@ -1,6 +1,6 @@
 package com.sixjeon.storey.domain.auth.service;
 
-import com.sixjeon.storey.domain.auth.entity.Role;
+import com.sixjeon.storey.domain.auth.entity.enums.Role;
 import com.sixjeon.storey.domain.auth.exception.*;
 import com.sixjeon.storey.domain.auth.web.dto.LoginReq;
 import com.sixjeon.storey.domain.auth.web.dto.LoginRes;
@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor

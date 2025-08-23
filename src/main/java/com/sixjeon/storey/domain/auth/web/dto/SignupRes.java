@@ -1,6 +1,6 @@
 package com.sixjeon.storey.domain.auth.web.dto;
 
-import com.sixjeon.storey.domain.auth.entity.Role;
+import com.sixjeon.storey.domain.auth.entity.enums.Role;
 
 public record SignupRes(
         Long id,
