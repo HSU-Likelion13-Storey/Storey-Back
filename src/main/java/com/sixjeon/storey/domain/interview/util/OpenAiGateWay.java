@@ -146,6 +146,13 @@ public class OpenAiGateWay implements AiGateWay {
         return raw == null || raw.isBlank() ? "이 친구는 따듯한 마음을 가진 다정한 친구" : raw.trim();
     }
 
+    @Override
+    public String generateCharacterTagline(String oneLineSummary) {
+        String prompt = buildCharacterTaglinePrompt(oneLineSummary);
+        String raw = chat(prompt);
+        return raw == null || raw.isBlank() ? " 오늘도 좋은 하루 보내세요! " : raw.trim();
+    }
+
     private String chat(String userPrompt) {
         WebClient wc = webClient;
 
@@ -261,4 +268,29 @@ public class OpenAiGateWay implements AiGateWay {
             %s
             """, summary);
     }
+
+    private String buildCharacterTaglinePrompt(String summary) {
+        return String.format("""
+            당신은 친근하고 따듯한 캐릭터의 말풍선 대사를 작성하는 전문가입니다.
+  
+           아래 가게의 핵심 메시지를 바탕으로, 캐릭터가 손님들에게 건네는 기분 좋은 한마디를 작성해주세요.
+           
+           [작성 규칙]
+           - 10~25자 이내의 짧고 임팩트 있는 한 문장
+           - 따듯하고 친군한 톤으로 작성
+           - 손님을 반갑게 맞이하거나 기분 좋게 만드는 내용
+           - 가게의 특색이나 분위기와 연결되면 더 좋음
+           - 존댓말 사용 (안녕하세요, ~세요 등)
+           - 따옴표나 추가 설명 없이 대사만 출력
+           
+           [예시]
+           - "오늘도 좋은 하루 되세요!"
+           - "따듯한 커피로 마음도 따듯하게!"
+           - "행복한 순간을 만들어드릴게요!"
+         
+           [핵심 메시지]
+           %s
+           """, summary);
 }
+                
+      }

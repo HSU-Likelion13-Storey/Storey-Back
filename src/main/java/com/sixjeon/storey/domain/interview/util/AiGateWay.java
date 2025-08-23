@@ -24,4 +24,6 @@ public interface AiGateWay {
     
     // 캐릭터 설명 생성
     String generateCharacterDescription(String oneLineSummary);
+
+    String generateCharacterTagline(String oneLineSummary);
 }
