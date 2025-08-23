@@ -52,7 +52,7 @@ public class CharacterServiceImpl implements CharacterService {
 
         String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
         String name = aiGateWay.generateCharacterName(oneLine);
-        String description = aiGateWay.generateCharacterDescription(oneLine);
+        String description = aiGateWay.generateCharacterDescription(oneLine, name);
         String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
         byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
@@ -85,14 +85,17 @@ public class CharacterServiceImpl implements CharacterService {
                 .orElseThrow(NotFoundStoreException::new);
 
         // 기존 캐릭터 삭제
-        Character existingCharacter = characterRepository.findByStoreId(store.getId())
-                .orElseThrow(CharacterNotFoundException::new);
+        Character character = characterRepository.findByStoreId(store.getId())
+                .orElseGet(() -> {
+                    Character newCharacter = new Character();
+                    newCharacter.setStore(store);
+                    return newCharacter;
+                });
 
-        characterRepository.delete(existingCharacter);
 
         String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
         String name = aiGateWay.generateCharacterName(oneLine);
-        String description = aiGateWay.generateCharacterDescription(oneLine);
+        String description = aiGateWay.generateCharacterDescription(oneLine, name);
         String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
         byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
@@ -101,16 +104,12 @@ public class CharacterServiceImpl implements CharacterService {
         String url = s3Uploader.uploadPngAndGetUrl(png, key);
         String tagline = aiGateWay.generateCharacterTagline(oneLine);
 
-        Character character = Character.builder()
-                .name(name)
-                .imageUrl(url)
-                .tagline(tagline)
-                .description(description)
-                //             .narrativeSummary(oneLine)
-                .store(store)
-                .build();
+        character.setName(name);
+        character.setImageUrl(url);
+        character.setTagline(tagline);
+        character.setDescription(description);
+        //characterToUpdate.setNarrativeSummary(oneLine);
 
-        characterRepository.save(character);
 
         return new CharacterRes(url, tagline, name , description, oneLine);
 

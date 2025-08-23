@@ -23,7 +23,7 @@ public interface AiGateWay {
     String generateCharacterName(String oneLineSummary);
     
     // 캐릭터 설명 생성
-    String generateCharacterDescription(String oneLineSummary);
+    String generateCharacterDescription(String oneLineSummary, String characterName);
 
     String generateCharacterTagline(String oneLineSummary);
 }
