@@ -1,10 +1,7 @@
 package com.sixjeon.storey.domain.character.web.controller;
 
 import com.sixjeon.storey.domain.character.service.CharacterService;
-import com.sixjeon.storey.domain.character.web.dto.CharacterDetailRes;
-import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
-import com.sixjeon.storey.domain.character.web.dto.UpdateCharacterReq;
-import com.sixjeon.storey.domain.character.web.dto.UpdateCharacterRes;
+import com.sixjeon.storey.domain.character.web.dto.*;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
@@ -42,7 +39,7 @@ public class CharacterController {
                 .body(SuccessResponse.ok(characterRes));
     }
 
-    @GetMapping("/characters/{characterId}")
+    @GetMapping("/user/characters/{characterId}")
     public ResponseEntity<SuccessResponse<?>> characterDetail(@PathVariable Long characterId) {
         CharacterDetailRes characterRes = characterService.getCharacterDetail(characterId);
         return ResponseEntity
@@ -51,15 +48,24 @@ public class CharacterController {
 
     }
 
-    @PutMapping("/owner/characters/{characterId}")
-    public ResponseEntity<SuccessResponse<?>> updateCharacter(@PathVariable Long characterId,
-                                                              @RequestBody @Valid UpdateCharacterReq updateCharacterReq,
+    @PutMapping("/owner/character/update")
+    public ResponseEntity<SuccessResponse<?>> updateCharacter(@RequestBody @Valid UpdateCharacterReq updateCharacterReq,
                                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        UpdateCharacterRes updateCharacterRes = characterService.updateCharacter(characterId, updateCharacterReq, customUserDetails.getUsername());
+        UpdateCharacterRes updateCharacterRes = characterService.updateCharacter(updateCharacterReq, customUserDetails.getUsername());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.ok(updateCharacterRes));
+    }
+
+    // 사장님 캐릭터 조회
+    @GetMapping("/owner/character")
+    public ResponseEntity<SuccessResponse<?>> getMyCharacter(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        MyCharacterRes myCharacterRes = characterService.getMyCharacter(customUserDetails.getUsername());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.ok(myCharacterRes));
     }
 }
