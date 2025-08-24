@@ -2,6 +2,8 @@ package com.sixjeon.storey.domain.character.web.dto;
 
 public record CharacterDetailRes(
         Long characterId,
+        Long storeId,
+        Long interviewSessionId,
         String imageUrl,
         String tagline,
         String name,

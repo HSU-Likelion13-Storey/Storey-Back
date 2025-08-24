@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +63,7 @@ public class CharacterServiceImpl implements CharacterService {
                 });
 
         interviewSession.setNarrativeSummary(oneLine);
-        interviewSessionRepository.save(interviewSession);
+        InterviewSession savedSession = interviewSessionRepository.save(interviewSession);
 
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine, name);
@@ -83,9 +84,17 @@ public class CharacterServiceImpl implements CharacterService {
                 .store(store)
                 .build();
 
-        characterRepository.save(character);
+        Character savedCharacter = characterRepository.save(character);
 
-        return new CharacterRes(url, tagline, name , description, oneLine);
+        return new CharacterRes(
+                savedCharacter.getId(),
+                savedSession.getId(),
+                url,
+                tagline,
+                name,
+                description,
+                oneLine
+        );
     }
 
     @Override
@@ -117,7 +126,7 @@ public class CharacterServiceImpl implements CharacterService {
                 });
 
         interviewSession.setNarrativeSummary(oneLine);
-        interviewSessionRepository.save(interviewSession);
+        InterviewSession savedSession = interviewSessionRepository.save(interviewSession);
 
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine, name);
@@ -133,10 +142,17 @@ public class CharacterServiceImpl implements CharacterService {
         character.setImageUrl(url);
         character.setTagline(tagline);
         character.setDescription(description);
-        //characterToUpdate.setNarrativeSummary(oneLine);
 
 
-        return new CharacterRes(url, tagline, name , description, oneLine);
+        return new CharacterRes(
+                character.getId(),
+                savedSession.getId(),
+                url,
+                tagline,
+                name,
+                description,
+                oneLine
+        );
 
     }
 
@@ -148,15 +164,18 @@ public class CharacterServiceImpl implements CharacterService {
         // 연관관계
         Store store = character.getStore();
 
-        String narrativeSummary = interviewSessionRepository
+        Optional<InterviewSession> sessionOpt = interviewSessionRepository
                 .findByStoreIdOrderByCreatedAtDesc(store.getId())
                 .stream()
-                .findFirst()
-                .map(InterviewSession::getNarrativeSummary)
-                .orElse(null);
+                .findFirst();
+
+        String narrativeSummary = sessionOpt.map(InterviewSession::getNarrativeSummary).orElse(null);
+        Long interviewSessionId = sessionOpt.map(InterviewSession::getId).orElse(null);
 
         return new CharacterDetailRes(
                 character.getId(),
+                store.getId(),
+                interviewSessionId,
                 character.getImageUrl(),
                 character.getTagline(),
                 character.getName(),
