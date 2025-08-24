@@ -37,11 +37,4 @@ public class InterviewController {
                 .body(SuccessResponse.ok(interviewRes));
     }
 
-
-    // 이전에 진행했던 인터뷰 조회
-    /**@GetMapping("interview/check")
-    public ResponseEntity<SuccessResponse<?>> checkInterview(@RequestParam Long interviewId) {
-
-    }**/
-
 }

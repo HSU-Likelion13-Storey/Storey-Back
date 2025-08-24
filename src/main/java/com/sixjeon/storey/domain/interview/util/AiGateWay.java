@@ -11,7 +11,7 @@ public interface AiGateWay {
     String oneLineSummary(String text);
 
     // 캐릭터용 이미지 프롬프트 만들기
-    String buildCharacterImagePrompt(String oneLineSummary);
+    String buildCharacterImagePrompt(String oneLineSummary, String category);
 
     // 이미지 생성 (PNG bytes 반환)
     byte[] generateImagePng(String imagePrompt, String size);

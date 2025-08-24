@@ -55,8 +55,8 @@ public class OpenAiGateWay implements AiGateWay {
     }
 
     @Override
-    public String buildCharacterImagePrompt(String oneLineSummary) {
-        return buildCharacterImagePromptInternal(oneLineSummary);
+    public String buildCharacterImagePrompt(String oneLineSummary, String category) {
+        return buildCharacterImagePromptInternal(oneLineSummary, category);
     }
 
     @Override
@@ -218,17 +218,91 @@ public class OpenAiGateWay implements AiGateWay {
             """, answer);
     }
 
-    private String buildCharacterImagePromptInternal(String summary) {
+    public String buildCharacterImagePromptInternal(String oneLineSummary, String category) {
+        String c = (category == null) ? "" : category.trim().toLowerCase();
+
+        String styleHints = switch (c) {
+            case "cafe", "카페" -> """
+        - cozy, warm wood & latte-art motif
+        - props: mug, bean icon, steam
+        - palette: cream, mocha, green accents
+        """;
+            case "bakery", "베이커리", "bread" -> """
+        - fluffy, oven-fresh vibe
+        - props: baguette, whisk, wheat icon
+        - palette: butter yellow, wheat beige, cocoa brown
+        """;
+            case "bbq", "barbecue", "고깃집" -> """
+        - bold, energetic, grill sparks
+        - props: grill, tongs, charcoal
+        - palette: charcoal gray, ember red, metallic silver
+        """;
+            case "beauty", "미용실", "salon" -> """
+        - sleek, glossy finish
+        - props: scissors, comb, ribbon
+        - palette: soft pink, pearl white, graphite
+        """;
+            case "pet", "반려동물", "애견" -> """
+        - cute, playful proportions
+        - props: paw, bone/fish icon, collar tag
+        - palette: warm beige, soft brown, sky blue
+        """;
+            case "burger", "햄버거" -> """
+        - juicy, fun fast-food style
+        - props: burger, fries, soda cup
+        - palette: ketchup red, cheese yellow, lettuce green
+        """;
+            case "chicken", "치킨" -> """
+        - crispy, lively fried-chicken vibe
+        - props: drumstick, wings, basket
+        - palette: golden brown, spicy red, creamy white
+        """;
+            case "pizza", "피자" -> """
+        - cheesy, casual italian-american feel
+        - props: pizza slice, cheese pull, oven peel
+        - palette: tomato red, cheese yellow, basil green
+        """;
+            case "sushi", "회", "일식" -> """
+        - elegant, clean japanese motif
+        - props: sushi roll, sashimi, chopsticks
+        - palette: ocean blue, rice white, wasabi green
+        """;
+            case "izakaya", "이자카야", "일식 선술집" -> """
+        - cozy, nighttime tavern feel
+        - props: sake bottle, lantern, skewers
+        - palette: warm amber, lantern red, charcoal black
+        """;
+            case "kimchi stew", "kimchi jjigae", "김치찌개" -> """
+        - hearty, home-style korean comfort food
+        - props: clay pot, steam, tofu, kimchi
+        - palette: spicy red, earthy brown, green onion
+        """;
+            default -> """
+        - friendly local small-business vibe
+        - props: simple icon related to trade
+        - palette: high-contrast but tasteful
+        """;
+        };
+
         return String.format("""
-            Create a mascot character illustration for a small business.
-            Business concept (Korean): "%s".
-            
-            [Style]
-            - friendly, cute, high-contrast
-            - full body, front view
-            - white or transparent background
-            - poster/branding ready
-            """, summary);
+    Create a mascot character illustration for a small business.
+    Business concept (Korean): "%s".
+    Category: "%s".
+    
+                [Style]
+                - friendly, cute, high-contrast
+                - full body, front view
+                - IMPORTANT: generate exactly ONE mascot character only
+                - no extra objects, no side icons, no multiple variations
+                - background must be clean white or fully transparent
+                - rendered as a **hyper-realistic 3D character model**
+                - soft studio lighting, subtle shadows for depth
+                - glossy textures (skin, clothing, food surface as appropriate)
+                - Pixar / DreamWorks style rendering quality
+    
+    [Category Hints]
+    %s
+    """, oneLineSummary, category == null ? "" : category, styleHints);
     }
 
     private String buildCharacterDescriptionPrompt(String summary, String characterName) {

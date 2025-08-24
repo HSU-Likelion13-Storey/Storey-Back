@@ -20,9 +20,9 @@ public class CharacterController {
 
     // 캐릭터 생성 & 인터뷰 한줄 요약
     @PostMapping("/owner/character")
-    public ResponseEntity<SuccessResponse<?>> character(@RequestBody @Valid InterviewReq interviewReq,
+    public ResponseEntity<SuccessResponse<?>> character(@RequestBody @Valid CharacterCreateReq characterCreateReq,
                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        CharacterRes characterRes = characterService.generateCharacter(interviewReq, customUserDetails.getUsername());
+        CharacterRes characterRes = characterService.generateCharacter(characterCreateReq, customUserDetails.getUsername());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -30,9 +30,9 @@ public class CharacterController {
     }
 
     @PutMapping("/owner/character")
-    public ResponseEntity<SuccessResponse<?>> regenerateCharacter(@RequestBody @Valid InterviewReq interviewReq,
+    public ResponseEntity<SuccessResponse<?>> regenerateCharacter(@RequestBody @Valid CharacterCreateReq characterCreateReq,
                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        CharacterRes characterRes = characterService.regenerateCharacter(interviewReq, customUserDetails.getUsername());
+        CharacterRes characterRes = characterService.regenerateCharacter(characterCreateReq, customUserDetails.getUsername());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

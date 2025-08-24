@@ -10,7 +10,7 @@ import com.sixjeon.storey.domain.interview.entity.InterviewSession;
 import com.sixjeon.storey.domain.interview.repository.InterviewSessionRepository;
 import com.sixjeon.storey.domain.interview.util.AiGateWay;
 import com.sixjeon.storey.domain.interview.util.S3Uploader;
-import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
+import com.sixjeon.storey.domain.character.web.dto.CharacterCreateReq;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.owner.repository.OwnerRepository;
 import com.sixjeon.storey.domain.store.entity.Store;
@@ -37,7 +37,7 @@ public class CharacterServiceImpl implements CharacterService {
 
     @Override
     @Transactional
-    public CharacterRes generateCharacter(@Valid InterviewReq interviewReq, String ownerLoginId) {
+    public CharacterRes generateCharacter(@Valid CharacterCreateReq characterCreateReq, String ownerLoginId) {
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -48,8 +48,10 @@ public class CharacterServiceImpl implements CharacterService {
             throw new AlreadyRegisterCharacterException();
         }
 
-        String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
+        // 핵심 메시지 한줄 요약
+        String oneLine = aiGateWay.oneLineSummary(characterCreateReq.getAnswer());
 
+        // 최신 세션 조회 or 신규 생성
         InterviewSession interviewSession = interviewSessionRepository.findByStoreIdOrderByCreatedAtDesc(store.getId())
                 .stream()
                 .findFirst()
@@ -62,11 +64,13 @@ public class CharacterServiceImpl implements CharacterService {
         interviewSession.setNarrativeSummary(oneLine);
         InterviewSession savedSession = interviewSessionRepository.save(interviewSession);
 
+        // 캐릭터 정보 생성
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine, name);
-        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
-        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
+        // ✅ category까지 반영된 프롬프트 생성
+        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine, characterCreateReq.getCategory());
+        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
         String key = "characters/%s.png".formatted(java.util.UUID.randomUUID());
         String url = s3Uploader.uploadPngAndGetUrl(png, key);
@@ -77,7 +81,6 @@ public class CharacterServiceImpl implements CharacterService {
                 .imageUrl(url)
                 .tagline(tagline)
                 .description(description)
-   //             .narrativeSummary(oneLine)
                 .store(store)
                 .build();
 
@@ -96,7 +99,7 @@ public class CharacterServiceImpl implements CharacterService {
 
     @Override
     @Transactional
-    public CharacterRes regenerateCharacter(InterviewReq interviewReq, String ownerLoginId) {
+    public CharacterRes regenerateCharacter(@Valid CharacterCreateReq characterCreateReq, String ownerLoginId) {
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -110,9 +113,10 @@ public class CharacterServiceImpl implements CharacterService {
                     return newCharacter;
                 });
 
+        // 한줄 요약
+        String oneLine = aiGateWay.oneLineSummary(characterCreateReq.getAnswer());
 
-        String oneLine = aiGateWay.oneLineSummary(interviewReq.getAnswer());
-
+        // 세션 조회 or 생성
         InterviewSession interviewSession = interviewSessionRepository.findByStoreIdOrderByCreatedAtDesc(store.getId())
                 .stream()
                 .findFirst()
@@ -125,11 +129,13 @@ public class CharacterServiceImpl implements CharacterService {
         interviewSession.setNarrativeSummary(oneLine);
         InterviewSession savedSession = interviewSessionRepository.save(interviewSession);
 
+        // 캐릭터 정보 생성
         String name = aiGateWay.generateCharacterName(oneLine);
         String description = aiGateWay.generateCharacterDescription(oneLine, name);
-        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine);
-        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
+        // ✅ category 반영된 프롬프트
+        String imgPrompt = aiGateWay.buildCharacterImagePrompt(oneLine, characterCreateReq.getCategory());
+        byte[] png = aiGateWay.generateImagePng(imgPrompt, "1024x1024");
 
         String key = "characters/%s.png".formatted(java.util.UUID.randomUUID());
         String url = s3Uploader.uploadPngAndGetUrl(png, key);
@@ -140,7 +146,6 @@ public class CharacterServiceImpl implements CharacterService {
         character.setTagline(tagline);
         character.setDescription(description);
 
-
         return new CharacterRes(
                 character.getId(),
                 savedSession.getId(),
@@ -150,7 +155,6 @@ public class CharacterServiceImpl implements CharacterService {
                 description,
                 oneLine
         );
-
     }
 
     @Override
