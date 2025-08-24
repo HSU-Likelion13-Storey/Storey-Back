@@ -189,6 +189,7 @@ public class CharacterServiceImpl implements CharacterService {
     }
 
     @Override
+    @Transactional
     public UpdateCharacterRes updateCharacter(Long characterId, UpdateCharacterReq updateCharacterReq, String ownerLoginId) {
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
@@ -208,6 +209,8 @@ public class CharacterServiceImpl implements CharacterService {
         character.setName(updateCharacterReq.getName());
         character.setDescription(updateCharacterReq.getDescription());
         character.setTagline(updateCharacterReq.getTagline());
+
+        characterRepository.save(character);
 
         String finalNarrativeSummary = updateCharacterReq.getNarrativeSummary();
         if (finalNarrativeSummary != null && !finalNarrativeSummary.trim().isEmpty()) {
