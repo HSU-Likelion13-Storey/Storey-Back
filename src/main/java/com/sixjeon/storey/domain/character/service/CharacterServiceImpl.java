@@ -5,10 +5,7 @@ import com.sixjeon.storey.domain.character.entity.Character;
 import com.sixjeon.storey.domain.character.exception.AlreadyRegisterCharacterException;
 import com.sixjeon.storey.domain.character.exception.CharacterNotFoundException;
 import com.sixjeon.storey.domain.character.repository.CharacterRepository;
-import com.sixjeon.storey.domain.character.web.dto.CharacterDetailRes;
-import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
-import com.sixjeon.storey.domain.character.web.dto.UpdateCharacterReq;
-import com.sixjeon.storey.domain.character.web.dto.UpdateCharacterRes;
+import com.sixjeon.storey.domain.character.web.dto.*;
 import com.sixjeon.storey.domain.interview.entity.InterviewSession;
 import com.sixjeon.storey.domain.interview.repository.InterviewSessionRepository;
 import com.sixjeon.storey.domain.interview.util.AiGateWay;
@@ -190,21 +187,15 @@ public class CharacterServiceImpl implements CharacterService {
 
     @Override
     @Transactional
-    public UpdateCharacterRes updateCharacter(Long characterId, UpdateCharacterReq updateCharacterReq, String ownerLoginId) {
+    public UpdateCharacterRes updateCharacter(UpdateCharacterReq updateCharacterReq, String ownerLoginId) {
         Owner owner = ownerRepository.findByLoginId(ownerLoginId)
                 .orElseThrow(UserNotFoundException::new);
 
         Store store = storeRepository.findByOwner(owner)
                 .orElseThrow(NotFoundStoreException::new);
 
-        Character character = characterRepository.findById(characterId)
+        Character character = characterRepository.findByStoreId(store.getId())
                 .orElseThrow(CharacterNotFoundException::new);
-
-
-        // 캐릭터가 해당 가게의 것인지 확인
-        if (!character.getStore().getId().equals(store.getId())) {
-            throw new CharacterNotFoundException();
-        }
 
         character.setName(updateCharacterReq.getName());
         character.setDescription(updateCharacterReq.getDescription());
@@ -236,6 +227,43 @@ public class CharacterServiceImpl implements CharacterService {
                 .description(character.getDescription())
                 .tagline(character.getTagline())
                 .narrativeSummary(finalNarrativeSummary)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public MyCharacterRes getMyCharacter(String ownerLoginId) {
+        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                .orElseThrow(UserNotFoundException::new);
+
+        Store store = storeRepository.findByOwner(owner)
+                .orElseThrow(NotFoundStoreException::new);
+
+        // 캐릭터 존재 유무 확인
+        Optional<Character> characterOptional = characterRepository.findByStoreId(store.getId());
+
+        if (characterOptional.isEmpty()) {
+            return MyCharacterRes.noCharacter();
+        }
+
+        Character character = characterOptional.get();
+
+        String narrativeSummary = interviewSessionRepository
+                .findByStoreIdOrderByCreatedAtDesc(store.getId())
+                .stream()
+                .findFirst()
+                .map(InterviewSession::getNarrativeSummary)
+                .orElse(null);
+
+
+        return MyCharacterRes.builder()
+                .hasCharacter(true)
+                .characterId(character.getId())
+                .imageUrl(character.getImageUrl())
+                .tagline(character.getTagline())
+                .name(character.getName())
+                .description(character.getDescription())
+                .narrativeSummary(narrativeSummary)
                 .build();
     }
 }
