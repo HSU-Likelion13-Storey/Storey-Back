@@ -222,84 +222,61 @@ public class OpenAiGateWay implements AiGateWay {
         String c = (category == null) ? "" : category.trim().toLowerCase();
 
         String styleHints = switch (c) {
-            case "cafe", "카페" -> """
-        - cozy, warm wood & latte-art motif
-        - props: mug, bean icon, steam
-        - palette: cream, mocha, green accents
+            // 1. 동물 캐릭터
+            case "cat", "고양이", "dog", "강아지", "rabbit", "토끼",
+                 "squirrel", "다람쥐", "bear", "곰", "fox", "여우" -> """
+        - animal-inspired mascot (anthropomorphic style)
+        - friendly, cute, approachable design
+        - soft fur texture, round eyes, warm expressions
         """;
-            case "bakery", "베이커리", "bread" -> """
-        - fluffy, oven-fresh vibe
-        - props: baguette, whisk, wheat icon
-        - palette: butter yellow, wheat beige, cocoa brown
+
+            // 2. 사물 의인화 캐릭터
+            case "object", "사물", "cup", "coffee cup", "커피잔", "bread", "빵",
+                 "lamp", "전등", "chair", "의자", "plant", "화분" -> """
+        - personified everyday object mascot
+        - arms, legs, expressive face on object
+        - playful and imaginative design
         """;
-            case "bbq", "barbecue", "고깃집" -> """
-        - bold, energetic, grill sparks
-        - props: grill, tongs, charcoal
-        - palette: charcoal gray, ember red, metallic silver
+
+            // 3. 음식 캐릭터
+            case "food", "음식", "tteokbokki", "떡볶이", "chicken", "치킨",
+                 "hamburger", "burger", "햄버거", "pizza", "피자",
+                 "makgeolli", "막걸리" -> """
+        - food item turned into mascot character
+        - delicious, appetizing but still cute
+        - expressive eyes and mouth, holding utensils or props
         """;
-            case "beauty", "미용실", "salon" -> """
-        - sleek, glossy finish
-        - props: scissors, comb, ribbon
-        - palette: soft pink, pearl white, graphite
+
+            // 4. 사람/스토리 기반 캐릭터
+            case "person", "사람", "사장님", "owner", "단골", "손님", "customer", "story" -> """
+        - human-inspired mascot
+        - based on shop owner, staff, or local story
+        - cute proportions, round face, warm and approachable
         """;
-            case "pet", "반려동물", "애견" -> """
-        - cute, playful proportions
-        - props: paw, bone/fish icon, collar tag
-        - palette: warm beige, soft brown, sky blue
-        """;
-            case "burger", "햄버거" -> """
-        - juicy, fun fast-food style
-        - props: burger, fries, soda cup
-        - palette: ketchup red, cheese yellow, lettuce green
-        """;
-            case "chicken", "치킨" -> """
-        - crispy, lively fried-chicken vibe
-        - props: drumstick, wings, basket
-        - palette: golden brown, spicy red, creamy white
-        """;
-            case "pizza", "피자" -> """
-        - cheesy, casual italian-american feel
-        - props: pizza slice, cheese pull, oven peel
-        - palette: tomato red, cheese yellow, basil green
-        """;
-            case "sushi", "회", "일식" -> """
-        - elegant, clean japanese motif
-        - props: sushi roll, sashimi, chopsticks
-        - palette: ocean blue, rice white, wasabi green
-        """;
-            case "izakaya", "이자카야", "일식 선술집" -> """
-        - cozy, nighttime tavern feel
-        - props: sake bottle, lantern, skewers
-        - palette: warm amber, lantern red, charcoal black
-        """;
-            case "kimchi stew", "kimchi jjigae", "김치찌개" -> """
-        - hearty, home-style korean comfort food
-        - props: clay pot, steam, tofu, kimchi
-        - palette: spicy red, earthy brown, green onion
-        """;
-            default -> """
-        - friendly local small-business vibe
-        - props: simple icon related to trade
-        - palette: high-contrast but tasteful
-        """;
+
+            // 기본값 (직접 입력 fallback)
+            default -> String.format("""
+        - mascot inspired by the concept of "%s"
+        - designed to be cute, expressive, and approachable
+        """, c.isBlank() ? "a friendly theme" : c);
         };
 
         return String.format("""
-    Create a mascot character illustration for a small business.
-    Business concept (Korean): "%s".
+    Create a mascot character illustration.
+    Concept (Korean): "%s".
     Category: "%s".
     
-                [Style]
-                - friendly, cute, high-contrast
-                - full body, front view
-                - IMPORTANT: generate exactly ONE mascot character only
-                - no extra objects, no side icons, no multiple variations
-                - background must be clean white or fully transparent
-                - rendered as a **hyper-realistic 3D character model**
-                - soft studio lighting, subtle shadows for depth
-                - glossy textures (skin, clothing, food surface as appropriate)
-                - Pixar / DreamWorks style rendering quality
-    
+    [Style]
+    - friendly, cute, high-contrast
+    - full body, front view
+    - IMPORTANT: generate exactly ONE mascot character only
+    - no extra objects, no side icons, no multiple variations
+    - background must be clean white or fully transparent
+    - rendered as a **hyper-realistic 3D character model**
+    - soft studio lighting, subtle shadows for depth
+    - glossy textures (skin, clothing, surfaces as appropriate)
+    - Pixar / DreamWorks style rendering quality
+
     [Category Hints]
     %s
     """, oneLineSummary, category == null ? "" : category, styleHints);
