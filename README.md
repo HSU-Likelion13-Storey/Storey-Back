@@ -23,7 +23,6 @@
 - **대화형 인터뷰**: 답변 분석 후 다음 질문 동적 생성
 - **스토리 요약**: 인터뷰 내용을 핵심 문장으로 압축
 
-<img width="361" height="715" alt="Image" src="https://github.com/user-attachments/assets/1331edbd-709d-4848-9229-dcc3cf66a8fd" />
 
 ### 🎨 마스코트 캐릭터 생성
 - **AI 이미지 생성**: OpenAI DALL·E 3 기반 고품질 캐릭터
@@ -31,7 +30,6 @@
 - **캐릭터 설정**: 성격·말버릇·태그라인 자동 생성
 - **재생성 가능**: 마음에 들지 않으면 즉시 재생성
 
-<img width="337" height="731" alt="Image" src="https://github.com/user-attachments/assets/823d630b-e2c1-481e-a80d-7cc5a921ce72" />
 
 ### 🗺️ 인터랙티브 지도
 - **가게 위치 표시**: 카카오맵 API 연동
@@ -39,11 +37,23 @@
 - **캐릭터 수집 게임**: 포켓몬GO 스타일 수집 요소
 - **이벤트 정보**: 진행 중인 이벤트 표시
 
-<img width="430" height="932" alt="Image" src="https://github.com/user-attachments/assets/24d6c5cd-3e88-443c-b53f-3af7f52d623e" />
 
-<img width="394" height="457" alt="Image" src="https://github.com/user-attachments/assets/0e42c665-c466-4345-b750-30e7f946754b" />
+## 🛠 기술 스택
 
-### 기술 스택
+| 구분 | 기술 |
+|------|------|
+| **언어** | <img src="https://img.shields.io/badge/Java 21-007396?style=flat-square&logo=java&logoColor=white" /> |
+| **프레임워크** | <img src="https://img.shields.io/badge/Spring%20Boot 3.5.4-6DB33F?style=flat-square&logo=springboot&logoColor=white" /> |
+| **보안** | <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white" /> |
+| **빌드 도구** | <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white" /> |
+| **데이터베이스** | <img src="https://img.shields.io/badge/MySQL 8.0-4479A1?style=flat-square&logo=mysql&logoColor=white" /> |
+| **ORM** | <img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=flat-square&logo=springboot&logoColor=white" /> |
+| **AI API** | <img src="https://img.shields.io/badge/OpenAI GPT--4o-412991?style=flat-square&logo=openai&logoColor=white" /> <img src="https://img.shields.io/badge/DALL--E 3-412991?style=flat-square&logo=openai&logoColor=white" /> |
+| **좌표 변환 API** | <img src="https://img.shields.io/badge/Kakao-FFCD00?style=flat-square&logo=kakao&logoColor=black" /> |
+| **결제 API** | <img src="https://img.shields.io/badge/Toss Payments-0064FF?style=flat-square&logo=tosspayments&logoColor=white" /> |
+| **클라우드 스토리지** | <img src="https://img.shields.io/badge/AWS S3-569A31?style=flat-square&logo=amazons3&logoColor=white" /> |
+| **컨테이너** | <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" /> |
+| **CI/CD** | <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" /> |
 
 
 
