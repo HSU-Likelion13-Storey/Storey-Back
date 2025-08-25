@@ -2,12 +2,9 @@ package com.sixjeon.storey.domain.store.repository;
 
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.domain.store.entity.Store;
-import com.sixjeon.storey.domain.store.web.dto.MapStoreRes;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

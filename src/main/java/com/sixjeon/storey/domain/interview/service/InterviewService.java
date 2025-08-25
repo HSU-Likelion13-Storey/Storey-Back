@@ -1,12 +1,9 @@
 package com.sixjeon.storey.domain.interview.service;
 
 import com.sixjeon.storey.domain.interview.util.AiGateWay;
-import com.sixjeon.storey.domain.interview.util.S3Uploader;
-import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
 import com.sixjeon.storey.domain.interview.web.dto.CreateQuestionReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewRes;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

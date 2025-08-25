@@ -1,11 +1,9 @@
 package com.sixjeon.storey.domain.store.entity;
 
-import com.sixjeon.storey.domain.event.entity.Event;
 import com.sixjeon.storey.domain.owner.entity.Owner;
 import com.sixjeon.storey.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter

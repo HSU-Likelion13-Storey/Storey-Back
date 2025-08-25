@@ -1,7 +1,6 @@
 package com.sixjeon.storey.domain.subscription.web.controller;
 
 import com.sixjeon.storey.domain.subscription.service.SubscriptionService;
-import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRenewReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRenewRes;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
@@ -21,20 +20,12 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    //  카드 등록 API
-    @PostMapping("/card")
-    public ResponseEntity<SuccessResponse<?>> registerCard(@RequestBody @Valid CardRegistrationReq cardRegistrationReq,
-                                                           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        subscriptionService.registerCard(cardRegistrationReq, customUserDetails.getUsername());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(SuccessResponse.ok("카드 정보 성공적으로 등록되었습니다."));
-    }
 
     // 구독 재활성화
     @PostMapping("/renew")
     public ResponseEntity<SuccessResponse<?>> renewSubscription(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                  @RequestBody @Valid SubscriptionRenewReq subscriptionRenewReq) {
-        boolean isSuccess = subscriptionService.reactivateSubscription(subscriptionRenewReq, customUserDetails.getUsername());
+        boolean isSuccess = subscriptionService.subscribeWithImmediatePayment(subscriptionRenewReq, customUserDetails.getUsername());
 
         if (isSuccess) {
             SubscriptionRenewRes subscriptionRenewRes = new SubscriptionRenewRes(true);
