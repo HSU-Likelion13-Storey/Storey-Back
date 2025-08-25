@@ -12,7 +12,6 @@ import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRenewReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
 import com.sixjeon.storey.global.external.toss.client.TossPaymentsClient;
-import com.sixjeon.storey.global.external.toss.exception.PaymentFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

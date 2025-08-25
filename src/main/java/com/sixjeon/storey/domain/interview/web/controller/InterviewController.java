@@ -1,7 +1,6 @@
 package com.sixjeon.storey.domain.interview.web.controller;
 
 import com.sixjeon.storey.domain.interview.service.InterviewService;
-import com.sixjeon.storey.domain.character.web.dto.CharacterRes;
 import com.sixjeon.storey.domain.interview.web.dto.CreateQuestionReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.domain.interview.web.dto.InterviewRes;

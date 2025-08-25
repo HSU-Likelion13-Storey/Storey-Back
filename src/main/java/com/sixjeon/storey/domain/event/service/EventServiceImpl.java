@@ -1,7 +1,6 @@
 package com.sixjeon.storey.domain.event.service;
 
 import com.sixjeon.storey.domain.event.entity.Event;
-import com.sixjeon.storey.domain.event.exception.EventNotFoundException;
 import com.sixjeon.storey.domain.event.repository.EventRepository;
 import com.sixjeon.storey.domain.event.web.dto.SaveEventReq;
 import com.sixjeon.storey.domain.event.web.dto.SaveEventRes;

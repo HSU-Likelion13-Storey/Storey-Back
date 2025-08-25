@@ -2,7 +2,6 @@ package com.sixjeon.storey.domain.character.web.controller;
 
 import com.sixjeon.storey.domain.character.service.CharacterService;
 import com.sixjeon.storey.domain.character.web.dto.*;
-import com.sixjeon.storey.domain.interview.web.dto.InterviewReq;
 import com.sixjeon.storey.global.response.SuccessResponse;
 import com.sixjeon.storey.global.security.details.CustomUserDetails;
 import jakarta.validation.Valid;
