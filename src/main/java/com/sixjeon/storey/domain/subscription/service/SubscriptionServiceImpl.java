@@ -8,7 +8,6 @@ import com.sixjeon.storey.domain.subscription.entity.enums.SubscriptionStatus;
 import com.sixjeon.storey.domain.subscription.exception.InvalidSubscriptionStatusException;
 import com.sixjeon.storey.domain.subscription.exception.SubscriptionNotFoundException;
 import com.sixjeon.storey.domain.subscription.repository.SubscriptionRepository;
-import com.sixjeon.storey.domain.subscription.web.dto.CardRegistrationReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRenewReq;
 import com.sixjeon.storey.domain.subscription.web.dto.SubscriptionRes;
 import com.sixjeon.storey.global.external.toss.client.TossPaymentsClient;
@@ -31,58 +30,49 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final TossPaymentsClient tossPaymentsClient;
 
     private final String PLAN_NAME = "마스코트 브랜딩 패스";
-    private final Long PLAN_PRICE = 20900L;
-
-    // 카드 등록 로직
-    @Override
-    @Transactional
-    public void registerCard(CardRegistrationReq cardRegistrationReq, String ownerLoginId) {
-        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
-                .orElseThrow(UserNotFoundException::new);
-
-        // Owner ID를 customerKey로 사용
-        String customerKey = "owner_" + owner.getId();
-
-        // 토스 페이먼트 API를 통해 authKey로 빌링키 발금
-        String billingKey = tossPaymentsClient.issueBillingKey(
-                cardRegistrationReq.getAuthKey(),
-                customerKey
-        );
-
-        owner.registerCard(billingKey);
-
-        ownerRepository.save(owner);
-
-    }
+    private final Long PLAN_PRICE = 29900L;
 
     @Override
     @Transactional
-    public boolean reactivateSubscription(SubscriptionRenewReq subscriptionRenewReq, String ownerLoginId) {
-        try{
-        Owner owner = ownerRepository.findByLoginId(ownerLoginId)
-                .orElseThrow(UserNotFoundException::new);
+    public boolean subscribeWithImmediatePayment(SubscriptionRenewReq subscriptionRenewReq, String ownerLoginId) {
+        try {
+            Owner owner = ownerRepository.findByLoginId(ownerLoginId)
+                    .orElseThrow(UserNotFoundException::new);
 
-        // 구독 정보 조회 및 갱신
-        Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
-                .orElseThrow(SubscriptionNotFoundException::new);
+            Subscription subscription = subscriptionRepository.findByOwnerId(owner.getId())
+                    .orElseThrow(SubscriptionNotFoundException::new);
 
-        // 바로 결제 승인 진행
-        Map<String, Object> tossResponse = tossPaymentsClient.confirmPayment(
-                subscriptionRenewReq.getPaymentKey(),
-                subscriptionRenewReq.getOrderId(),
-                subscriptionRenewReq.getAmount()
-        );
+            String customerKey = "owner_" + owner.getId();
 
-        String status = (String) tossResponse.get("status");
+            // 즉시 결제 실행
+            Map<String, Object> tossResponse = tossPaymentsClient.confirmPayment(
+                    subscriptionRenewReq.getPaymentKey(),
+                    subscriptionRenewReq.getOrderId(),
+                    subscriptionRenewReq.getAmount(),
+                    customerKey
+            );
 
-        if ("DONE".equals(status)) {
-            subscription.renew();
-            return true;
-        } else {
-            return false;
-        }
+            String status = (String) tossResponse.get("status");
+
+            if ("DONE".equals(status)) {
+                // 결제 성공 후 빌링키 자동 발급 (토스페이먼츠 API 응답에서 추출)
+                String billingKey = (String) tossResponse.get("billingKey");
+
+                if (billingKey != null) {
+                    // 자동 발급된 빌링키를 Owner에게 등록
+                    owner.registerCard(billingKey);
+                    ownerRepository.save(owner);
+                }
+
+                // 구독 활성화
+                subscription.renew();
+                return true;
+            } else {
+                return false;
+            }
 
         } catch (Exception e) {
+            log.error("즉시결제 및 카드등록 실패: {}", e.getMessage());
             return false;
         }
     }

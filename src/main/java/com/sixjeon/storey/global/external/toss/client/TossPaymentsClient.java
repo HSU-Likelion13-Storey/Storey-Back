@@ -22,39 +22,36 @@ public class TossPaymentsClient {
     private final String secretKey;
     private final String apiUrl;
 
-    // 빌링키 발급 API (authKey -> customerKey 변환)
-    public String issueBillingKey(String authKey, String customerKey) {
+    public Map<String, Object> confirmPayment(String paymentKey, String orderId, Long amount, String customerKey) {
         String encodeKey = Base64.getEncoder().encodeToString((this.secretKey + ":").getBytes());
 
         try {
+            Map<String, Object> requestBody = Map.of(
+                    "paymentKey", paymentKey,
+                    "orderId", orderId,
+                    "amount", amount,
+                    "customerKey", customerKey  // 빌링키 자동발급을 위한 customerKey 추가
+            );
+
             Map<String, Object> response = webClient.post()
-                    .uri("v1/billing/authorizations/issue")
+                    .uri("v1/payments/confirm")
                     .header("Authorization", "Basic " + encodeKey)
                     .header("Content-Type", "application/json")
-                    .bodyValue(Map.of(
-                            "authKey", authKey,
-                            "customerKey", customerKey
-                    ))
+                    .bodyValue(requestBody)
                     .retrieve()
                     .onStatus(status -> status.isError(),
                             response2 -> response2.bodyToMono(String.class)
-                                    .flatMap(body -> {
-                                        return Mono.error(new PaymentFailedException());
-                                    }))
+                                    .flatMap(body -> Mono.error(new PaymentFailedException())))
                     .bodyToMono(Map.class)
                     .block();
 
-            if (response == null || response.get("billingKey") == null) {
-                throw new PaymentFailedException();
-            }
-
-            return (String) response.get("billingKey");
+            // 응답에 billingKey가 포함됨 (자동발급)
+            return response;
         } catch (Exception e) {
             throw new PaymentFailedException();
         }
     }
 
-    // 빌링키(자동 결제)를 요청
     public Map<String, Object> requestBillingPayment(String billingKey, Long amount, String orderId, String orderName) {
         String encodeKey = Base64.getEncoder().encodeToString((this.secretKey + ":").getBytes());
 
@@ -71,43 +68,13 @@ public class TossPaymentsClient {
                     .retrieve()
                     .onStatus(status -> status.isError(),
                             response2 -> response2.bodyToMono(String.class)
-                                    .flatMap(body -> {
-                                        return Mono.error(new PaymentFailedException());
-                                    }))
+                                    .flatMap(body -> Mono.error(new PaymentFailedException())))
                     .bodyToMono(Map.class)
                     .block();
 
             if (response == null || !"DONE".equals(response.get("status"))) {
                 throw new PaymentFailedException();
             }
-            return response;
-        } catch (Exception e) {
-            throw new PaymentFailedException();
-        }
-    }
-
-    public Map<String, Object > confirmPayment(String paymentKey, String orderId, Long amount){
-        String encodeKey = Base64.getEncoder().encodeToString((this.secretKey + ":").getBytes());
-
-        try {
-            Map<String, Object> response = webClient.post()
-                    .uri("v1/payments/confirm")
-                    .header("Authorization", "Basic " + encodeKey)
-                    .header("Content-Type", "application/json")
-                    .bodyValue(Map.of(
-                            "paymentKey", paymentKey,
-                            "orderId", orderId,
-                            "amount", amount
-                    ))
-                    .retrieve()
-                    .onStatus(status -> status.isError(),
-                            response2 -> response2.bodyToMono(String.class)
-                                    .flatMap(body ->
-                                        Mono.error(new PaymentFailedException())
-                                    ))
-                    .bodyToMono(Map.class)
-                    .block();
-
             return response;
         } catch (Exception e) {
             throw new PaymentFailedException();
